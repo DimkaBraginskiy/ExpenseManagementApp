@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using ExpensesManagementApp.Data;
+using ExpensesManagementApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,11 +18,12 @@ builder.Services.AddAuthorization();
 //adding scoped
 builder.Services.AddControllers();
 //builder.Services.AddScoped<IDbService, DbService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
 
 
 
 builder.Services.AddDbContext<AppDbContext>(options => 
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default"))
+    options.UseNpgsql(connectionString)
 );
 
 
