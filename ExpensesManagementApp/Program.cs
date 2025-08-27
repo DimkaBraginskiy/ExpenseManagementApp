@@ -4,12 +4,12 @@ using ExpensesManagementApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var baseConnection = builder.Configuration.GetConnectionString("Default");
+var password = builder.Configuration["DbPassword"];
+var connectionString = baseConnection.Replace("PASSWORD", password);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
-
 builder.Services.AddAuthorization();
 
 
@@ -17,8 +17,6 @@ builder.Services.AddAuthorization();
 //adding scoped
 builder.Services.AddControllers();
 //builder.Services.AddScoped<IDbService, DbService>();
-
-
 
 
 
