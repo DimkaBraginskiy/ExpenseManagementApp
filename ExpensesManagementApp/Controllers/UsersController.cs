@@ -1,5 +1,7 @@
 ﻿using ExpensesManagementApp.Services;
 using Microsoft.AspNetCore.Mvc;
+using ExpensesManagementApp.DTOs.Request;
+
 
 namespace ExpensesManagementApp.Controllers;
 
@@ -13,7 +15,22 @@ public class UsersController : ControllerBase
     {
         _usersService = usersService;
     }
-    
+
+    [HttpPost]
+    public async Task<IActionResult> CreateUserAsync(CancellationToken token, [FromBody] AddUserRequestDto dto)
+    {
+        try
+        {
+            _usersService.CreateUserAsync(token, dto);
+            return Ok(new { message = "User has been created" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, ex.Message);
+        }
+    }
+
+
     [HttpGet]
     public async Task<IActionResult> GetUsersAsync(CancellationToken token)
     {
