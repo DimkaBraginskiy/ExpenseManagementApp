@@ -17,7 +17,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateUserAsync(CancellationToken token, [FromBody] AddUserRequestDto dto)
+    public async Task<IActionResult> CreateUserAsync(CancellationToken token, [FromBody] RegisterUserDto dto)
     {
         try
         {

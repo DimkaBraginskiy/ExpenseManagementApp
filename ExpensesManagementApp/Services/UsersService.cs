@@ -26,8 +26,7 @@ public class UsersService : IUsersService
         {
             UserResponseDto dto = new UserResponseDto()
             {
-                Email = user.Email,
-                Login = user.Login
+                Email = user.Email
             };
             response.Add(dto);
         }
@@ -35,21 +34,19 @@ public class UsersService : IUsersService
         return response;
     }
 
-    public async Task CreateUserAsync(CancellationToken token, AddUserRequestDto dto)
+    public async Task CreateUserAsync(CancellationToken token, RegisterUserDto dto)
     {
         //1. check if the data in dto exists and valid
         //2. convert dto to model
         //3. save the model data to context db
 
-        if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Login) ||
-            string.IsNullOrWhiteSpace(dto.Password))
+        if (string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
         {
             throw new ValidationException("Email or Login or Password is incorrect or empty.");
         }
 
         var user = new User()
         {
-            Login = dto.Login,
             Email = dto.Email,
             PasswordHash = dto.Password
         };

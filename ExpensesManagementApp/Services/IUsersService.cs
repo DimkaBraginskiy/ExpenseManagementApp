@@ -7,5 +7,5 @@ namespace ExpensesManagementApp.Services;
 public interface IUsersService
 {
     public Task<IEnumerable<UserResponseDto>> GetAllUsersAsync(CancellationToken token);
-    public Task CreateUserAsync(CancellationToken token, AddUserRequestDto dto);
+    public Task CreateUserAsync(CancellationToken token, RegisterUserDto dto);
 }
