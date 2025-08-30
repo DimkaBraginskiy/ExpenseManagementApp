@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using ExpensesManagementApp.Data;
+using ExpensesManagementApp.DTOs.Request;
+using ExpensesManagementApp.Models;
 using ExpensesManagementApp.Services;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,12 +16,21 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthorization();
 
-
+//adding identity (userManager)
+builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+    
 
 //adding scoped
 builder.Services.AddControllers();
 //builder.Services.AddScoped<IDbService, DbService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IExpensesService, ExpensesService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 

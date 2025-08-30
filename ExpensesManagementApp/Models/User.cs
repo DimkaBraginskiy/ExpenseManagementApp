@@ -1,20 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace ExpensesManagementApp.Models;
 [Table("User")]
-public class User
+public class User : IdentityUser<int>
 {
-    [Key]
-    public int Id { get; set; }
-    [Required]
-    [MaxLength(50)]
-    public string Email { get; set; } = null!;
-    [Required]
-    [MinLength(8)]
-    [MaxLength(20)]
-    public string PasswordHash { get; set; } = null!;
-    
     public string? RefreshToken { get; set; } = null!;
     
     public DateTime? RefreshTokenExpiry { get; set; } = null!;
