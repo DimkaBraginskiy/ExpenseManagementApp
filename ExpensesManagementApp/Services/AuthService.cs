@@ -20,12 +20,10 @@ public class AuthService : IAuthService
         _userManager = userManager;
     }
 
-    public async Task<IActionResult> RegisterUserAsync(RegisterUserDto dto, CancellationToken token)
+    public async Task<IActionResult> RegisterUserAsync(RegisterUserDto dto, CancellationToken cancellationToken)
     {
-        //1. Validate data - validated in dto
-        
-        //2. Check whether email already exists
-        if (await _context.Users.AnyAsync(u => u.Email == dto.Email, token))
+        //2. Check whether email already exists - unnecessary with Identity
+        if (await _context.Users.AnyAsync(u => u.Email == dto.Email, cancellationToken))
         {
             throw new InvalidOperationException("Email already exists in the system!");
         }
@@ -41,5 +39,24 @@ public class AuthService : IAuthService
             return new BadRequestObjectResult(result.Errors);
         }
         return new OkObjectResult("User registered successfully!");
+    }
+
+    public async Task<IActionResult> LoginUserAsync(LoginUserDto dto, CancellationToken cancellationToken)
+    {
+        var user = _userManager.Users.SingleOrDefaultAsync(u => u.Email == dto.Email, cancellationToken);
+        
+        if (user == null)
+        {
+            return new UnauthorizedResult();
+        }
+        var passwordValid = await _userManager.CheckPasswordAsync(await user, dto.Password);
+        if (!passwordValid)
+        {
+            return new UnauthorizedResult();
+        }
+        else
+        {
+            return new OkObjectResult("Login successful!");
+        }
     }
 }
