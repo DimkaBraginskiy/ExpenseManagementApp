@@ -44,19 +44,18 @@ public class AuthService : IAuthService
     public async Task<IActionResult> LoginUserAsync(LoginUserDto dto, CancellationToken cancellationToken)
     {
         var user = _userManager.Users.SingleOrDefaultAsync(u => u.Email == dto.Email, cancellationToken);
-        
         if (user == null)
-        {
             return new UnauthorizedResult();
-        }
+        
         var passwordValid = await _userManager.CheckPasswordAsync(await user, dto.Password);
         if (!passwordValid)
-        {
             return new UnauthorizedResult();
-        }
-        else
-        {
-            return new OkObjectResult("Login successful!");
-        }
+        //Jwt token generation
+        
+        //refresh token generation
+        
+        //pack data into dto and return
+        
+        return new OkObjectResult("Login successful!");
     }
 }

@@ -4,6 +4,7 @@ using ExpensesManagementApp.Data;
 using ExpensesManagementApp.DTOs.Request;
 using ExpensesManagementApp.Models;
 using ExpensesManagementApp.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
         options.User.RequireUniqueEmail = true;
     })
     .AddEntityFrameworkStores<AppDbContext>()
+    .AddApiEndpoints()
     .AddDefaultTokenProviders();
     
 
@@ -31,6 +33,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IExpensesService, ExpensesService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
 
 
 
@@ -55,5 +58,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.MapIdentityApi<User>();
 
 app.Run();

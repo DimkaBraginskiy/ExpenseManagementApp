@@ -23,7 +23,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> LoginUserAsync(LoginUserDto dto, CancellationToken token)
+    public async Task<IActionResult> LoginUserAsync([FromBody] LoginUserDto dto, CancellationToken token)
     {
         var result = await _authService.LoginUserAsync(dto, token);
         return Ok(result);
