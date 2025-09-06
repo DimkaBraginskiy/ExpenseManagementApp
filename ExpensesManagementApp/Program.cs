@@ -43,7 +43,8 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
     })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddApiEndpoints()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddSignInManager();
     
 
 //adding scoped
