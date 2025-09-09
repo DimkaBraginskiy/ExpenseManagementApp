@@ -2,5 +2,5 @@
 
 public class ExpenseResponseDto
 {
-    
+    public int Id { get; set; }
 }

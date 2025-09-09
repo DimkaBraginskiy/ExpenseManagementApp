@@ -65,10 +65,10 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid Password.");
         }
 
-        return await GenerateTokens(user);
+        return await GenerateTokensAsync(user);
     }
 
-    private async Task<UserLoginResponseDto> GenerateTokens(User user)
+    private async Task<UserLoginResponseDto> GenerateTokensAsync(User user)
     {
         var jwtConfig = _configuration.GetSection("Jwt");
         List<Claim> claims = new List<Claim>
