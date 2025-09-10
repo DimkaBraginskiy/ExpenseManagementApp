@@ -23,12 +23,18 @@ public class Expense
     //Nullable
     [ForeignKey("Category")]
     public int? CategoryId { get; set; }
-    public Category Category { get; set; }
+
+    public Category Category { get; set; } = null!;
     
     //Nullable
     [ForeignKey("Issuer")]
     public int? IssuerId { get; set; }
-    public Issuer Issuer { get; set; }
+    public Issuer Issuer { get; set; } = null!;
+    
+    
+    [ForeignKey("Currency")]
+    public int? CurrencyId { get; set; }
+    public Currency Currency { get; set;} = null!;
 
     public ICollection<Product> Products { get; set; } = new List<Product>();
 } 

@@ -12,6 +12,7 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<Issuer> Issuers { get; set; } = null!;
     public DbSet<Product> Products { get; set; } = null!;
+    public DbSet<Currency> Currencies { get; set; } = null!;
 
     protected AppDbContext() { }
     

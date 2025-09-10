@@ -15,6 +15,8 @@ public class ExpenseRequestDto
     public ExpenseCategoryRequestDto Category { get; set; } = null!;
 
     public ExpenseIssuerRequestDto Issuer { get; set; } = null!;
+
+    public ExpenseCurrencyRequestDto Currency { get; set; } = null!;
     
     public ICollection<ExpenseProductRequestDto> Products { get; set; } = new List<ExpenseProductRequestDto>();
 }
