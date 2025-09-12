@@ -73,7 +73,7 @@ public class AuthService : IAuthService
         var jwtConfig = _configuration.GetSection("Jwt");
         List<Claim> claims = new List<Claim>
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

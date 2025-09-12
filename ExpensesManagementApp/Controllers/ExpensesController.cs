@@ -25,9 +25,9 @@ public class ExpensesController : ControllerBase
     public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetAllExpensesByUserIdAsync(CancellationToken token, int id)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        Console.WriteLine($"userIdClaim: {userIdClaim}");
         if (int.TryParse(userIdClaim, out int userId) == false)
             return Unauthorized(new { Error = "Invalid user" });
-
         try
         {
             var expenses = await _expensesService.GetAllExpensesByUserIdAsync(token, id);
@@ -45,6 +45,7 @@ public class ExpensesController : ControllerBase
     public async Task<IActionResult> CreateExpenseAsync(CancellationToken token, [FromBody] ExpenseRequestDto dto)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        Console.WriteLine($"userIdClaim: {userIdClaim}");
         if (int.TryParse(userIdClaim, out int userId) == false)
             return Unauthorized(new { Error = "Invalid user" });
         
