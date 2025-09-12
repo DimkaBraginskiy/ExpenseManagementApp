@@ -11,12 +11,37 @@ public class ExpensesService : IExpensesService
 {
     private readonly AppDbContext _context;
 
-    public ExpensesService(AppDbContext context)
+    public ExpensesService(AppDbContext context, IUsersService usersService)
     {
         _context = context;
     }
 
-    public async Task<ExpenseResponseDto> CreateExpenseAsync(CancellationToken token, int userId, ExpenseRequestDto dto)
+    public async Task<List<ExpenseResponseDto>> GetAllExpensesByUserIdAsync(CancellationToken token, int id)
+    {
+        var expenses =
+            await _context.Expenses
+                .Where(e => e.UserId == id)
+                .Include(e => e.Category)
+                .Include(e => e.Currency)
+                .ToListAsync(token);
+
+        if (expenses.Count == 0)
+            throw new ArgumentException("No expenses found!");
+
+        var expenseDtos = expenses.Select(e => new ExpenseResponseDto()
+        {
+            Amount = e.Amount,
+            Date = e.Date,
+            Description = e.Description,
+            CategoryId = e.CategoryId,
+            IssuerId = e.IssuerId,
+            Currencyid = e.CurrencyId
+        }).ToList();
+
+        return expenseDtos;
+    }
+
+    public async Task<ExpenseMinimalResponseDto> CreateExpenseAsync(CancellationToken token, int userId, ExpenseRequestDto dto)
     {
         var category = await _context.Categories
             .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Category.Name.ToLower().Trim(), token);
@@ -65,7 +90,7 @@ public class ExpensesService : IExpensesService
         await _context.Expenses.AddAsync(expense, token);
         await _context.SaveChangesAsync(token);
 
-        return new ExpenseResponseDto()
+        return new ExpenseMinimalResponseDto()
         {
             Id = expense.Id
         };

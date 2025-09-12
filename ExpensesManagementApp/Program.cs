@@ -37,14 +37,14 @@ builder.Services.AddAuthentication(options =>
 });
 
 //adding identity (userManager)
-builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
+builder.Services.AddIdentityCore<User>(options =>  // Note: AddIdentityCore<User> (no roles yet)
     {
         options.User.RequireUniqueEmail = true;
     })
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddApiEndpoints()
+    .AddEntityFrameworkStores<AppDbContext>()  // Still uses EF stores
+    .AddApiEndpoints()  // Keeps API endpoints for login/register
     .AddDefaultTokenProviders()
-    .AddSignInManager();
+    .AddSignInManager();  // Optional but useful for your AuthService
     
 
 //adding scoped
