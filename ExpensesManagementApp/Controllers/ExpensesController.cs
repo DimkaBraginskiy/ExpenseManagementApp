@@ -20,7 +20,7 @@ public class ExpensesController : ControllerBase
         _expensesService = expensesService;
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("users/{id}")]
     [Authorize]
     public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetAllExpensesByUserIdAsync(CancellationToken token, int id)
     {
