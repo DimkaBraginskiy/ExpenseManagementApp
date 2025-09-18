@@ -1,6 +1,6 @@
 # Expense Management App
 
-A full stack Web Application (currently under development)
+A full stack Web Application (currently under development) to enable Expenses Management.
 
 The application involves management of cash-based payments which can be added to the system by supporting detailed info storage.
 
@@ -9,23 +9,11 @@ The application involves management of cash-based payments which can be added to
 - [API Endpoints](#api-endpoints)
 
 ## Tech Stack
-### Backend
-
-- ASP .NET Core
-  
-#### Database
-
-- PostgreSQL
-- Entity Framework Core
-
-#### Security
-
-- .NET Core Identity
-- Json Web Token Authorization (JWT)
-
-### Frontend
-
-- React
+- **Backend Framework:** ASP .NET Core
+- **Database management:** Entity Framework Core
+- **Database:** PostgreSQL
+- **Authentication & Authorization:** .NET Core Identity, Json Web Token Authorization (JWT)
+- **Frontend Framework:** React
 
 ##  API Endpoints
 
