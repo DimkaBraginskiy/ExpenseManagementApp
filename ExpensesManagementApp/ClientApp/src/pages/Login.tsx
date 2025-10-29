@@ -1,10 +1,14 @@
 ﻿import {useState} from "react";
+
 import * as React from "react";
+import {useNavigate} from "react-router-dom";
+import {authService} from "../../services/AuthService.tsx";
 
 export function Login(){
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const navigate = useNavigate();
 
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -18,12 +22,19 @@ export function Login(){
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify({ email, password})
             })
+            
 
             if(response.ok){
                 alert('Login succeeded')
+
+                const loginData = await response.json();
+                
+                authService.saveToken(loginData.token, loginData.refreshToken);
                 
                 setEmail('')
                 setPassword('')
+                
+                navigate('/dashboard');
             }else{
                 alert('Login failed')
             }
