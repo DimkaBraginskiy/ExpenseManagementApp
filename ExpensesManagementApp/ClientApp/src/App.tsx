@@ -1,34 +1,80 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import * as React from "react";
 
 function App() {
-  const [count, setCount] = useState(0)
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    
+    
+    const handleRegister = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setIsLoading(true)
+        
+        try{
+            
+            const response = await fetch('/api/Auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json'},
+                body: JSON.stringify({ email, password})
+            })
+            
+            if(response.ok){
+                alert('Registration succeeded')
+                
+                setEmail('')
+                setPassword('')
+            }else{
+                alert('Registration failed')
+            }
+            
+        }catch (error){
+            alert('Error:' + error)
+            console.error('Error: ' + error)
+        }finally {
+            setIsLoading(false)
+        }
+    }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="App">
+        
+        <form onSubmit={handleRegister}>
+
+            <div>
+                <label>Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    placeholder="example@gmail.com"
+                />
+            </div>
+            
+            <div>
+                <label>Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    onChange={(p) => setPassword(p.target.value)}
+                    required
+                    placeholder="Enter your password here"
+                />
+            </div>
+            
+            <div>
+                <button
+                    type="submit"
+                    id="submit"
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Registering...' : 'Register'}
+                </button>
+            </div>
+        </form>
+    </div>
   )
 }
 
