@@ -38,9 +38,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReact", builder =>
+    options.AddPolicy("AllowReact", policy =>
     {
-        builder.WithOrigins("http://localhost:3000")
+        policy.WithOrigins("http://localhost:5173")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -76,8 +76,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-app.UseCors("AllowReact");
-
 // Configure the HTTP request pipeline.
 app.UseAuthentication();
 app.UseAuthorization();
@@ -87,6 +85,7 @@ app.MapControllers();
 
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("AllowReact");
     app.UseSwagger();
     app.UseSwaggerUI();
 }
