@@ -20,17 +20,18 @@ public class ExpensesController : ControllerBase
         _expensesService = expensesService;
     }
 
-    [HttpGet("users/{id}")]
+    [HttpGet("")]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetAllExpensesByUserIdAsync(CancellationToken token, int id)
+    public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetAllExpensesByUserIdAsync(CancellationToken token)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        Console.WriteLine($"userIdClaim: {userIdClaim}");
-        if (int.TryParse(userIdClaim, out int userId) == false)
+        
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
             return Unauthorized(new { Error = "Invalid user" });
         try
         {
-            var expenses = await _expensesService.GetAllExpensesByUserIdAsync(token, id);
+            var expenses = await _expensesService.GetAllExpensesByUserIdAsync(token, userId);
 
             return Ok(expenses);
         }
