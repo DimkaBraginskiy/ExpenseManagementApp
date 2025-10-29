@@ -36,6 +36,17 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReact", builder =>
+    {
+        builder.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+    
 //adding identity (userManager)
 builder.Services.AddIdentityCore<User>(options =>  // Note: AddIdentityCore<User> (no roles yet)
     {
@@ -64,6 +75,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 
 var app = builder.Build();
+
+app.UseCors("AllowReact");
 
 // Configure the HTTP request pipeline.
 app.UseAuthentication();
