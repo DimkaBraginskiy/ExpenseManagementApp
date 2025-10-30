@@ -26,7 +26,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ClientApp\" />
       <Folder Include="Core\Exceptions\" />
       <Folder Include="Infrastructure\" />
     </ItemGroup>

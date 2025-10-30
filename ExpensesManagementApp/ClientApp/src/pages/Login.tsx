@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
-import {authService} from "../../services/AuthService.tsx";
 
 export function Login(){
     const [email, setEmail] = useState('')
@@ -26,13 +25,13 @@ export function Login(){
 
             if(response.ok){
                 alert('Login succeeded')
-
-                const loginData = await response.json();
-                
-                authService.saveToken(loginData.token, loginData.refreshToken);
                 
                 setEmail('')
                 setPassword('')
+                
+                
+                const data = await response.json();
+                localStorage.setItem('accessToken', data.accessToken);
                 
                 navigate('/dashboard');
             }else{
