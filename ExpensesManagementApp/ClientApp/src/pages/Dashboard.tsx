@@ -1,4 +1,5 @@
 ﻿import {useEffect, useState} from "react";
+import {Card} from "../Card.tsx";
 
 export function Dashboard(){
     const [expenses, setExpenses] = useState([]);
@@ -38,11 +39,14 @@ export function Dashboard(){
         <div>
             <h1>My Expenses Dashboard</h1>
             {error && <p>{error}</p>}
-            <ul>
-                {expenses.map((exp: any) => (
-                    <li key={exp.id}>{exp.description} - {exp.amount} - {exp.date} - {exp.id}</li>
-                    ))}
-            </ul>
+            
+            {expenses.map((exp: any) => (
+                <Card
+                    description={exp.description}
+                    amount={exp.amount}
+                />
+            ))}
+            
         </div>
     );
 }
