@@ -37,5 +37,5 @@ public class Expense
     public int? CurrencyId { get; set; }
     public Currency Currency { get; set;} = null!;
 
-    public ICollection<Product> Products { get; set; } = new List<Product>();
+    public ICollection<ExpenseProduct> ExpenseProducts { get; set; } = new List<ExpenseProduct>();
 } 

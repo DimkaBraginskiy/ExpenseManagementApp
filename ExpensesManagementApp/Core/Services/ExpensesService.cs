@@ -121,7 +121,8 @@ public class ExpensesService : IExpensesService
         var expenses =
             await _context.Expenses
                 .Where(e => e.Category.Name.ToLower() == categoryName.ToLower() && e.UserId == userId)
-                .Include(expense => expense.Currency).Include(expense => expense.Issuer)
+                .Include(expense => expense.Currency)
+                .Include(expense => expense.Issuer)
                 .ToListAsync(token);
 
         if (expenses.Count == 0)
@@ -165,5 +166,71 @@ public class ExpensesService : IExpensesService
         }
 
         return expenseDtos;
+    }
+
+    public async Task<IEnumerable<ExpenseResponseDto>> GetExpensesByDateRangeAsync(
+        CancellationToken token, DateTime startDate, DateTime endDate)
+    {
+        if (startDate > DateTime.Now || endDate > DateTime.Now)
+        {
+            throw new ArgumentException("Date can not be in the future");
+        }
+
+        if (startDate > endDate)
+        {
+            throw new ArgumentException($"start date {startDate} is ahead of end date {endDate}");
+        }
+
+
+        var expenses =
+            await _context
+                .Expenses
+                .Where(e => e.Date >= startDate && e.Date <= endDate)
+                .Include(e => e.Category)
+                .Include(e => e.Currency)
+                .Include(e => e.Issuer)
+                .ToListAsync(token);
+        
+        var expenseDtos = new List<ExpenseResponseDto>();
+        
+        foreach (var expense in expenses)
+        {
+            var categoryName = string.IsNullOrWhiteSpace(expense.Category?.Name)
+                ? "None"
+                : expense.Category.Name.Trim();
+            
+            var currencyName = string.IsNullOrWhiteSpace(expense.Currency?.Name)
+                ? "None"
+                : expense.Currency.Name.Trim();
+
+            var issuerName = string.IsNullOrWhiteSpace(expense.Issuer?.Name)
+                ? "None"
+                : expense.Issuer.Name.Trim();
+
+            var exp = new ExpenseResponseDto()
+            {
+                Amount = expense.Amount,
+                Date = expense.Date,
+                Description = expense.Description,
+                Category = new CategoryResponseDto()
+                {
+                    Name = categoryName
+                },
+                Issuer = new IssuerResponseDto()
+                {
+                    Name = issuerName
+                },
+                Currency = new CurrencyResponseDto()
+                {
+                    Name = currencyName
+                }
+            };
+            
+            expenseDtos.Add(exp);
+        }
+
+        return expenseDtos;
+
+
     }
 }

@@ -80,6 +80,41 @@ public class ExpensesController : ControllerBase
         }
     }
 
+    [HttpGet("dateRange")]
+    [Authorize]
+    public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetExpensesByDateRangeAsync(
+        CancellationToken token,
+        [FromQuery] DateTimeOffset startDate,
+        [FromQuery] DateTimeOffset endDate)
+    {
+        try
+        {
+            if(startDate.Equals(null) || endDate.Equals(null))
+            {
+                throw new ArgumentException("Start of End date can not be null");
+            }
+
+            var startDateTime = startDate.Date.ToUniversalTime();
+            var endDateTime = endDate.Date.ToUniversalTime();
+
+            var result = await _expensesService.GetExpensesByDateRangeAsync(token, startDateTime, endDateTime);
+
+            if (!result.Any())
+            {
+                throw new ArgumentException($"No expenses found for time range from {startDate} to {endDate}");
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+
+
+    }
+
 
     [HttpPost]
     [Authorize]
