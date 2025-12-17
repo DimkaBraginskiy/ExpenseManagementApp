@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ExpensesManagementApp.Core.Models;
 using ExpensesManagementApp.Data;
 using ExpensesManagementApp.DTOs.Request;
 using ExpensesManagementApp.DTOs.Response;
@@ -26,7 +27,8 @@ public class UsersService : IUsersService
         {
             UserResponseDto dto = new UserResponseDto()
             {
-                Email = user.Email
+                Email = user.Email,
+                AccountCreationDate = user.AccountCreationDate
             };
             response.Add(dto);
         }
@@ -48,7 +50,8 @@ public class UsersService : IUsersService
         var user = new User()
         {
             Email = dto.Email,
-            PasswordHash = dto.Password
+            PasswordHash = dto.Password,
+            AccountCreationDate = DateTime.Now
         };
 
         

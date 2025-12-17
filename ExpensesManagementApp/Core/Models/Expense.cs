@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
+using ExpensesManagementApp.Core.Models;
 
 namespace ExpensesManagementApp.Models;
 [Table("Expense")]

@@ -16,27 +16,58 @@ public class ExpensesService : IExpensesService
         _context = context;
     }
 
-    public async Task<List<ExpenseResponseDto>> GetAllExpensesByUserIdAsync(CancellationToken token, int id)
+    public async Task<IEnumerable<ExpenseResponseDto>> GetAllExpensesByUserIdAsync(CancellationToken token, int id)
     {
         var expenses =
             await _context.Expenses
-                .Where(e => e.UserId == id)
+                .Where(expense => expense.UserId == id)
                 .Include(e => e.Category)
                 .Include(e => e.Currency)
+                .Include(e => e.Issuer)
                 .ToListAsync(token);
 
         if (expenses.Count == 0)
-            throw new ArgumentException("No expenses found!");
-
-        var expenseDtos = expenses.Select(e => new ExpenseResponseDto()
         {
-            Amount = e.Amount,
-            Date = e.Date,
-            Description = e.Description,
-            CategoryId = e.CategoryId,
-            IssuerId = e.IssuerId,
-            Currencyid = e.CurrencyId
-        }).ToList();
+            throw new ArgumentException("No expenses found");
+        }
+
+        var expenseDtos = new List<ExpenseResponseDto>();
+        
+        foreach (var expense in expenses)
+        {
+            var categoryName = string.IsNullOrWhiteSpace(expense.Category?.Name)
+                ? "None"
+                : expense.Category.Name.Trim();
+
+            var currencyName = string.IsNullOrWhiteSpace(expense.Currency?.Name)
+                ? "None"
+                : expense.Currency.Name.Trim();
+
+            var issuerName = string.IsNullOrWhiteSpace(expense.Issuer?.Name)
+                ? "None"
+                : expense.Issuer.Name.Trim();
+
+            var exp = new ExpenseResponseDto()
+            {
+                Amount = expense.Amount,
+                Date = expense.Date,
+                Description = expense.Description,
+                Category = new CategoryResponseDto()
+                {
+                    Name = categoryName
+                },
+                Issuer = new IssuerResponseDto()
+                {
+                    Name = issuerName
+                },
+                Currency = new CurrencyResponseDto()
+                {
+                    Name = currencyName
+                }
+            };
+            
+            expenseDtos.Add(exp);
+        }
 
         return expenseDtos;
     }
@@ -45,6 +76,7 @@ public class ExpensesService : IExpensesService
     {
         var category = await _context.Categories
             .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Category.Name.ToLower().Trim(), token);
+        
         if (category == null)
             throw new InvalidOperationException("Category does not exist");
         
@@ -53,29 +85,11 @@ public class ExpensesService : IExpensesService
         
         if (currency == null)
             throw new InvalidOperationException("Currency does not exist");
+
+        //for now optional not touching it
+        var issuer = await _context.Issuers.FirstOrDefaultAsync(i => i.Name.ToLower() == dto.Issuer.Name.ToLower(), token);
         
-        // var issuer = await _context.Issuers
-        //     .FirstOrDefaultAsync(i => i.Name.ToLower() == dto.Issuer.Name.ToLower().Trim(), token);
-        // if (issuer == null)
-        //     throw new InvalidOperationException("Issuer does not exist");
-        
-        // var productNames = dto.Products.Select(p => p.Name.ToLower().Trim()).Distinct().ToList();
-        // var existingProducts = await _context.Products
-        //     .Where(p => productNames.Contains(p.Name.ToLower()))
-        //     .ToListAsync(token);
-        //
-        // var products = new List<Product>();
-        // foreach (var productDto in dto.Products)
-        // {
-        //     var productNameLower = productDto.Name.ToLower().Trim();
-        //     var product = existingProducts.FirstOrDefault(p => p.Name.ToLower() == productNameLower);
-        //     if (product == null)
-        //         throw new InvalidOperationException($"Product '{productDto.Name}' does not exist");
-        //
-        //     _context.Products.Attach(product);  // Mark as existing
-        //     products.Add(product);
-        // }
-        
+
         var expense = new Expense()
         {
             Amount = dto.Amount,
@@ -94,5 +108,62 @@ public class ExpensesService : IExpensesService
         {
             Id = expense.Id
         };
+    }
+
+    public async Task<IEnumerable<ExpenseResponseDto>> GetExpensesByCategoryNameAndUserIdAsync(CancellationToken token, string categoryName, int userId)
+    {
+        if (!await _context.Categories.AnyAsync(c => c.Name.ToLower().Equals(categoryName.ToLower()), token))
+        {
+            throw new ArgumentException($"Category name {categoryName} does not exist!");
+        }
+
+
+        var expenses =
+            await _context.Expenses
+                .Where(e => e.Category.Name.ToLower() == categoryName.ToLower() && e.UserId == userId)
+                .Include(expense => expense.Currency).Include(expense => expense.Issuer)
+                .ToListAsync(token);
+
+        if (expenses.Count == 0)
+        {
+            throw new ArgumentException("No expenses found");
+        }
+
+        var expenseDtos = new List<ExpenseResponseDto>();
+        
+        foreach (var expense in expenses)
+        {
+
+            var currencyName = string.IsNullOrWhiteSpace(expense.Currency?.Name)
+                ? "None"
+                : expense.Currency.Name.Trim();
+
+            var issuerName = string.IsNullOrWhiteSpace(expense.Issuer?.Name)
+                ? "None"
+                : expense.Issuer.Name.Trim();
+
+            var exp = new ExpenseResponseDto()
+            {
+                Amount = expense.Amount,
+                Date = expense.Date,
+                Description = expense.Description,
+                Category = new CategoryResponseDto()
+                {
+                    Name = categoryName
+                },
+                Issuer = new IssuerResponseDto()
+                {
+                    Name = issuerName
+                },
+                Currency = new CurrencyResponseDto()
+                {
+                    Name = currencyName
+                }
+            };
+            
+            expenseDtos.Add(exp);
+        }
+
+        return expenseDtos;
     }
 }

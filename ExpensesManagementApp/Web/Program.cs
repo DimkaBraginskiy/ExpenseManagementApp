@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using ExpensesManagementApp.Core.Models;
 using ExpensesManagementApp.Data;
 using ExpensesManagementApp.DTOs.Request;
 using ExpensesManagementApp.Models;
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var baseConnection = builder.Configuration.GetConnectionString("Default");
 var password = builder.Configuration["DbPassword"];
+Console.WriteLine(password);
 var connectionString = baseConnection.Replace("PASSWORD", password);
 
 builder.Services.AddEndpointsApiExplorer();

@@ -1,57 +1,52 @@
-﻿// Dashboard.tsx
-import { useState, useEffect } from 'react';
-import {authService} from "../../services/AuthService.tsx";
+import {useEffect, useState} from "react";
+import {Card} from "../Card.tsx";
 
-
-export function Dashboard() {
-    const [userData, setUserData] = useState(null);
-
+export function Dashboard(){
+    const [expenses, setExpenses] = useState([]);
+    const [error, setError] = useState('');
+    
     useEffect(() => {
-        const fetchDashboardData = async () => {
-            try {
-                // Get token from storage
-                const token = authService.getToken();
-
-                // Make API call WITH the token
-                const response = await fetch('/api/Dashboard/user-data', {
+        const fetchExpenses = async () => {
+            const token = localStorage.getItem('accessToken');
+            if(token == null){
+                setError('Token not found');
+                return;
+            }
+            
+            try{
+                const response = await fetch('api/Expenses', {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`, // 👈 Send token to backend
-                        'Content-Type': 'application/json'
+                    headers:{
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json'
                     }
                 });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setUserData(data);
-                } else {
-                    console.error('Failed to fetch dashboard data');
+                
+                if(!response.ok){
+                    throw new Error('Failed to get response');
                 }
-            } catch (error) {
-                console.error('Error:', error);
+                
+                const data = await response.json();
+                setExpenses(data);
+            }catch(err: any){
+                setError('Error: ' + err.message);
             }
         };
-
-        fetchDashboardData();
-    }, []);
-
-    const handleLogout = () => {
-        // Clear tokens from storage
-        authService.clearTokens();
-        // Redirect to login
-        window.location.href = '/login';
-    };
-
-    return (
+        fetchExpenses();
+    }, [])
+    
+    return(
         <div>
-            <h1>Dashboard</h1>
-            <button onClick={handleLogout}>Logout</button>
-            {userData && (
-                <div>
-                    {/* Display your dashboard data here */}
-                    <p>Welcome to your dashboard!</p>
-                </div>
-            )}
+            <h1>My Expenses Dashboard</h1>
+            {error && <p>{error}</p>}
+            
+            {expenses.map((exp: any) => (
+                <Card
+                    description={exp.description}
+                    amount={exp.amount}
+                />
+            ))}
+            
         </div>
     );
 }

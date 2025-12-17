@@ -1,6 +1,7 @@
 ﻿using ExpensesManagementApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using ExpensesManagementApp.DTOs.Request;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace ExpensesManagementApp.Controllers;

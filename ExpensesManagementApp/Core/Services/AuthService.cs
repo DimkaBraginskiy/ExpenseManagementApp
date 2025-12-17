@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using ExpensesManagementApp.Core.Models;
 using ExpensesManagementApp.Data;
 using ExpensesManagementApp.DTOs.Request;
 using ExpensesManagementApp.DTOs.Response;

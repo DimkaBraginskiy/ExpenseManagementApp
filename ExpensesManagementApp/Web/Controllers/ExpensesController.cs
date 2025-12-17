@@ -25,10 +25,14 @@ public class ExpensesController : ControllerBase
     public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetAllExpensesByUserIdAsync(CancellationToken token)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
-        
+
+
         if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-            return Unauthorized(new { Error = "Invalid user" });
+        {
+            return Unauthorized(new { Error = "Invalid user" });    
+        }
+
+        
         try
         {
             var expenses = await _expensesService.GetAllExpensesByUserIdAsync(token, userId);
@@ -41,12 +45,49 @@ public class ExpensesController : ControllerBase
         }
     }
 
+    [HttpGet("category/{categoryName}")]
+    [Authorize]
+    public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetExpensesByCategoryNameAsync(
+        CancellationToken token, string categoryName)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized(new { Error = "Invalid user" });    
+        }
+        
+        Console.WriteLine($"User id :{userId}");
+        
+        try
+        {
+            if (string.IsNullOrEmpty(categoryName))
+            {
+                throw new ArgumentException("Category name can not be null or empty");
+            }
+
+            var result = await _expensesService.GetExpensesByCategoryNameAndUserIdAsync(token, categoryName, userId);
+
+            if (!result.Any())
+            {
+                throw new ArgumentException($"No expenses found by category {categoryName}");
+            }
+
+            return Ok(result);
+        }catch(Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> CreateExpenseAsync(CancellationToken token, [FromBody] ExpenseRequestDto dto)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         Console.WriteLine($"userIdClaim: {userIdClaim}");
+        
         if (int.TryParse(userIdClaim, out int userId) == false)
             return Unauthorized(new { Error = "Invalid user" });
         

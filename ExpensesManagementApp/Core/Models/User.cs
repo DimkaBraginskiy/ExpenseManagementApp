@@ -1,14 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using ExpensesManagementApp.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace ExpensesManagementApp.Models;
+namespace ExpensesManagementApp.Core.Models;
 [Table("User")]
 public class User : IdentityUser<int>
 {
     public string? RefreshToken { get; set; } = null!;
-    
+    public DateTime AccountCreationDate { get; set; }
     public DateTime? RefreshTokenExpiry { get; set; } = null!;
     
     public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
+    
+    
 }
