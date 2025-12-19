@@ -3,6 +3,7 @@ using ExpensesManagementApp.DTOs.Request;
 using ExpensesManagementApp.DTOs.Response;
 using ExpensesManagementApp.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -87,6 +88,13 @@ public class ExpensesController : ControllerBase
         [FromQuery] DateTimeOffset startDate,
         [FromQuery] DateTimeOffset endDate)
     {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized(new { Error = "Invalid user" });    
+        }
+        
         try
         {
             if(startDate.Equals(null) || endDate.Equals(null))
@@ -113,6 +121,39 @@ public class ExpensesController : ControllerBase
 
 
 
+    }
+    
+    [HttpGet("issuer/{issuerName}")]
+    [Authorize]
+    public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetExpensesByIssuerAsync(CancellationToken token, string issuerName)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized(new { Error = "Invalid user" });    
+        }
+
+        if (string.IsNullOrEmpty(issuerName))
+        {
+            throw new ArgumentException("Issuer name can not be null or empty");
+        }
+
+        try
+        {
+            var result = await _expensesService.GetExpensesByIssuerAsync(token, issuerName);
+
+            if (!result.Any())
+            {
+                throw new ArgumentException($"Could not found any expenses related to issuer name: {issuerName} ");
+            }
+            
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
 
@@ -146,4 +187,7 @@ public class ExpensesController : ControllerBase
             return StatusCode(500, new { Error = "Internal server error" });
         }
     }
+
+    
+
 }

@@ -14,4 +14,6 @@ public interface IExpensesService
 
     public Task<IEnumerable<ExpenseResponseDto>> GetExpensesByDateRangeAsync(
         CancellationToken token, DateTime startDate, DateTime endDate);
+
+    public Task<IEnumerable<ExpenseResponseDto>> GetExpensesByIssuerAsync(CancellationToken token, string issuerName);
 }
