@@ -3,7 +3,6 @@ using ExpensesManagementApp.DTOs.Request;
 using ExpensesManagementApp.DTOs.Response;
 using ExpensesManagementApp.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -163,7 +162,6 @@ public class ExpensesController : ControllerBase
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         Console.WriteLine($"userIdClaim: {userIdClaim}");
-        
         if (int.TryParse(userIdClaim, out int userId) == false)
             return Unauthorized(new { Error = "Invalid user" });
         
@@ -187,7 +185,4 @@ public class ExpensesController : ControllerBase
             return StatusCode(500, new { Error = "Internal server error" });
         }
     }
-
-    
-
 }

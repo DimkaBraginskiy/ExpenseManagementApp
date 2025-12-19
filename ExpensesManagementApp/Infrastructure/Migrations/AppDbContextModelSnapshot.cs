@@ -234,6 +234,79 @@ namespace ExpensesManagementApp.Migrations
                     b.ToTable("Product");
                 });
 
+            modelBuilder.Entity("ExpensesManagementApp.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RefreshTokenExpiry")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
                 {
                     b.Property<int>("Id")
@@ -366,25 +439,6 @@ namespace ExpensesManagementApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ExpensesManagementApp.Core.Models.ExpenseProduct", b =>
-                {
-                    b.HasOne("ExpensesManagementApp.Models.Expense", "Expense")
-                        .WithMany("ExpenseProducts")
-                        .HasForeignKey("ExpenseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ExpensesManagementApp.Models.Product", "Product")
-                        .WithMany("ExpenseProducts")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Expense");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("ExpensesManagementApp.Models.Expense", b =>
                 {
                     b.HasOne("ExpensesManagementApp.Models.Category", "Category")
@@ -399,7 +453,7 @@ namespace ExpensesManagementApp.Migrations
                         .WithMany()
                         .HasForeignKey("IssuerId");
 
-                    b.HasOne("ExpensesManagementApp.Core.Models.User", "User")
+                    b.HasOne("ExpensesManagementApp.Models.User", "User")
                         .WithMany("Expenses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -417,7 +471,7 @@ namespace ExpensesManagementApp.Migrations
             modelBuilder.Entity("ExpensesManagementApp.Models.Product", b =>
                 {
                     b.HasOne("ExpensesManagementApp.Models.Expense", "Expense")
-                        .WithMany()
+                        .WithMany("Products")
                         .HasForeignKey("ExpenseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -436,7 +490,7 @@ namespace ExpensesManagementApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
-                    b.HasOne("ExpensesManagementApp.Core.Models.User", null)
+                    b.HasOne("ExpensesManagementApp.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -445,7 +499,7 @@ namespace ExpensesManagementApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.HasOne("ExpensesManagementApp.Core.Models.User", null)
+                    b.HasOne("ExpensesManagementApp.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -460,7 +514,7 @@ namespace ExpensesManagementApp.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ExpensesManagementApp.Core.Models.User", null)
+                    b.HasOne("ExpensesManagementApp.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -469,26 +523,21 @@ namespace ExpensesManagementApp.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.HasOne("ExpensesManagementApp.Core.Models.User", null)
+                    b.HasOne("ExpensesManagementApp.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ExpensesManagementApp.Core.Models.User", b =>
-                {
-                    b.Navigation("Expenses");
-                });
-
             modelBuilder.Entity("ExpensesManagementApp.Models.Expense", b =>
                 {
-                    b.Navigation("ExpenseProducts");
+                    b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("ExpensesManagementApp.Models.Product", b =>
+            modelBuilder.Entity("ExpensesManagementApp.Models.User", b =>
                 {
-                    b.Navigation("ExpenseProducts");
+                    b.Navigation("Expenses");
                 });
 #pragma warning restore 612, 618
         }
