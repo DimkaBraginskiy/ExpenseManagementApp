@@ -29,8 +29,11 @@ In case of Access Token expiration, a new one will be given during Refresh Token
 
 
 ### Expenses
+## Assuming that we provide userId by default
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | POST | `/api/expenses` | Create new expense |
 | GET | `/api/expenses/users/{id}` | Get all expenses based on User Id |
+| GET | `/api/expenses/caregory/{categoryName}` | Get all categories based on provided category name |
+| GET | `/api/expenses/dateRange?startDate=YYYY-MM-DD&endDate=YYYY-MM-DD` | Get all categories by specified DateTimeOffset range |
 
