@@ -3,6 +3,7 @@ using System;
 using ExpensesManagementApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExpensesManagementApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251219181326_add Quantity field to joining table")]
+    partial class addQuantityfieldtojoiningtable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,24 @@ namespace ExpensesManagementApp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("ExpensesManagementApp.Core.Models.ExpenseProduct", b =>
+                {
+                    b.Property<int>("ExpenseId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ExpenseId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Expense_Product");
+                });
 
             modelBuilder.Entity("ExpensesManagementApp.Core.Models.User", b =>
                 {
@@ -142,6 +163,9 @@ namespace ExpensesManagementApp.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
                     b.Property<int?>("CategoryId")
                         .HasColumnType("integer");
 
@@ -208,12 +232,6 @@ namespace ExpensesManagementApp.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -354,6 +372,25 @@ namespace ExpensesManagementApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ExpensesManagementApp.Core.Models.ExpenseProduct", b =>
+                {
+                    b.HasOne("ExpensesManagementApp.Models.Expense", "Expense")
+                        .WithMany("ExpenseProducts")
+                        .HasForeignKey("ExpenseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ExpensesManagementApp.Models.Product", "Product")
+                        .WithMany("ExpenseProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Expense");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("ExpensesManagementApp.Models.Expense", b =>
                 {
                     b.HasOne("ExpensesManagementApp.Models.Category", "Category")
@@ -448,6 +485,16 @@ namespace ExpensesManagementApp.Migrations
             modelBuilder.Entity("ExpensesManagementApp.Core.Models.User", b =>
                 {
                     b.Navigation("Expenses");
+                });
+
+            modelBuilder.Entity("ExpensesManagementApp.Models.Expense", b =>
+                {
+                    b.Navigation("ExpenseProducts");
+                });
+
+            modelBuilder.Entity("ExpensesManagementApp.Models.Product", b =>
+                {
+                    b.Navigation("ExpenseProducts");
                 });
 #pragma warning restore 612, 618
         }

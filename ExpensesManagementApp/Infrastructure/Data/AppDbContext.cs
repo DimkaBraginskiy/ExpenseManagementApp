@@ -14,8 +14,6 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     public DbSet<Issuer> Issuers { get; set; } = null!;
     public DbSet<Product> Products { get; set; } = null!;
     public DbSet<Currency> Currencies { get; set; } = null!;
-
-    public DbSet<ExpenseProduct> ExpenseProducts { get; set; } = null!;
     protected AppDbContext() { }
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }

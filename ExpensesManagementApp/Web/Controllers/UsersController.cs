@@ -45,4 +45,23 @@ public class UsersController : ControllerBase
             return StatusCode(500, new { error = ex.Message });
         }
     }
+
+
+    [HttpDelete]
+    public async Task<ActionResult> DeleteUserAsync(CancellationToken token, int id)
+    {
+        try
+        {
+            var res = _usersService.DeleteUserAsync(token, id);
+            if (res.Result)
+            {
+                return Ok($"User with id {id} deleted successfully");
+            }
+
+            return BadRequest("Could not delete user");
+        }catch(Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
 }

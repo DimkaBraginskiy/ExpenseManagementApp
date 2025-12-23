@@ -6,17 +6,15 @@ namespace ExpensesManagementApp.DTOs.Request;
 public class ExpenseRequestDto
 {
     [Required]
-    public decimal Amount { get; set; }
-    [Required]
     public DateTime Date { get; set; }
     [Required]
     public string Description { get; set; } = string.Empty;
-
+    [Required]
     public ExpenseCategoryRequestDto Category { get; set; } = null!;
-
-    public ExpenseIssuerRequestDto Issuer { get; set; } = null!;
-
-    public ExpenseCurrencyRequestDto Currency { get; set; } = null!;
     
-    public ICollection<ExpenseProductRequestDto> Products { get; set; } = new List<ExpenseProductRequestDto>();
+    public ExpenseIssuerRequestDto Issuer { get; set; } = null!;
+    [Required]
+    public ExpenseCurrencyRequestDto Currency { get; set; } = null!;
+    [Required]
+    public IEnumerable<ProductRequestDto>? Products { get; set; }
 }

@@ -22,7 +22,6 @@ public class ExpenseMapper
 
         var exp = new ExpenseResponseDto()
         {
-            Amount = expense.Amount,
             Date = expense.Date,
             Description = expense.Description,
             Category = new CategoryResponseDto()
@@ -47,7 +46,6 @@ public class ExpenseMapper
     {
         var expense = new Expense()
         {
-            Amount = dto.Amount,
             Date = dto.Date,
             Description = dto.Description,
             UserId = userId,

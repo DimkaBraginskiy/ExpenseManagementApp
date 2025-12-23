@@ -10,8 +10,6 @@ public class Expense
     [Key] 
     public int Id { get; set; }
     [Required]
-    public decimal Amount { get; set; }
-    [Required]
     public DateTime Date { get; set; }
     [Required]
     [MaxLength(100)]
@@ -37,5 +35,5 @@ public class Expense
     public int? CurrencyId { get; set; }
     public Currency Currency { get; set;} = null!;
 
-    public ICollection<ExpenseProduct> ExpenseProducts { get; set; } = new List<ExpenseProduct>();
+    public IEnumerable<Product> Products = new List<Product>();
 } 

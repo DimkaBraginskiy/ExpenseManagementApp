@@ -58,4 +58,18 @@ public class UsersService : IUsersService
         _context.Users.Add(user);
         await _context.SaveChangesAsync(token);
     }
+    
+    
+    public async Task<bool> DeleteUserAsync(CancellationToken token, int id)
+    {
+        var expense = await _context.Expenses.FindAsync(new object?[] { id }, token);
+        if (expense == null)
+        {
+            return false;
+        }
+
+        _context.Expenses.Remove(expense);
+        await _context.SaveChangesAsync(token);
+        return true;
+    }
 }

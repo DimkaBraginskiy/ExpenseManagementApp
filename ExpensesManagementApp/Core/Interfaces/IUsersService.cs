@@ -8,4 +8,5 @@ public interface IUsersService
 {
     public Task<IEnumerable<UserResponseDto>> GetAllUsersAsync(CancellationToken token);
     public Task CreateUserAsync(CancellationToken token, RegisterUserDto dto);
+    public Task<bool> DeleteUserAsync(CancellationToken token, int id);
 }

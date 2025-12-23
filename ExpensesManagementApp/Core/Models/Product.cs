@@ -11,11 +11,13 @@ public class Product
     public int Id { get; set; }
     [Required]
     [MaxLength(50)]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; } = null!;
+    [Required]
+    public decimal Price { get; set; }
+    [Required]
+    public int Quantity { get; set; }
 
     [ForeignKey("Expense")]
     public int ExpenseId { get; set; }
     public Expense Expense { get; set; } = null!;
-    
-    public ICollection<ExpenseProduct> ExpenseProducts { get; set; } = new List<ExpenseProduct>();
 }

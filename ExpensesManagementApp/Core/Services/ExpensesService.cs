@@ -55,41 +55,46 @@ public class ExpensesService : IExpensesService
         
         if (currency == null)
             throw new InvalidOperationException("Currency does not exist");
+
+        if (dto.Products == null && !dto.Products.Any())
+        {
+            throw new InvalidOperationException("Products list is empty.");
+        } 
+        var productDtos = dto.Products.ToList();   
         
-        // var issuer = await _context.Issuers
-        //     .FirstOrDefaultAsync(i => i.Name.ToLower() == dto.Issuer.Name.ToLower().Trim(), token);
-        // if (issuer == null)
-        //     throw new InvalidOperationException("Issuer does not exist");
-        
-        // var productNames = dto.Products.Select(p => p.Name.ToLower().Trim()).Distinct().ToList();
-        // var existingProducts = await _context.Products
-        //     .Where(p => productNames.Contains(p.Name.ToLower()))
-        //     .ToListAsync(token);
-        //
-        // var products = new List<Product>();
-        // foreach (var productDto in dto.Products)
-        // {
-        //     var productNameLower = productDto.Name.ToLower().Trim();
-        //     var product = existingProducts.FirstOrDefault(p => p.Name.ToLower() == productNameLower);
-        //     if (product == null)
-        //         throw new InvalidOperationException($"Product '{productDto.Name}' does not exist");
-        //
-        //     _context.Products.Attach(product);  // Mark as existing
-        //     products.Add(product);
-        // }
-        
+
         var expense = new Expense()
         {
-            Amount = dto.Amount,
             Date = dto.Date,
             Description = dto.Description,
             UserId = userId,
             Category = category,
-            Currency = currency
+            Currency = currency,
         };
-        //expense.Products = products;
+
+        var products = new List<Product>();
+        foreach(var productDto in productDtos)
+        {
+            var product = new Product()
+            {
+                Name = productDto.Name,
+                Price = productDto.Price,
+                Quantity = productDto.Quantity,
+                Expense = expense,
+                ExpenseId = expense.Id
+            };
+            products.Add(product);
+        }
+        
+        expense.Products = products;
 
         await _context.Expenses.AddAsync(expense, token);
+
+        foreach (var product in products)
+        {
+            await _context.Products.AddAsync(product, token);
+        }
+
         await _context.SaveChangesAsync(token);
 
         return new ExpenseMinimalResponseDto()
