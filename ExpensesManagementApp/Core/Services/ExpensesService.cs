@@ -191,6 +191,19 @@ public class ExpensesService : IExpensesService
         }
 
         return expenseDtos;
+    }
 
+    public async Task<bool> DeleteExpenseAsync(CancellationToken token, int id)
+    {
+        var expense = await _context.Expenses.Where(e => e.Id == id).FirstOrDefaultAsync(token);
+
+        if (expense == null)
+        {
+            throw new ArgumentException($"Expense with id {id} does not exist");
+        }
+
+        _context.Expenses.Remove(expense);
+        await _context.SaveChangesAsync(token);
+        return true;
     }
 }

@@ -16,4 +16,6 @@ public interface IExpensesService
         CancellationToken token, DateTime startDate, DateTime endDate);
 
     public Task<IEnumerable<ExpenseResponseDto>> GetExpensesByIssuerAsync(CancellationToken token, string issuerName);
+
+    public Task<bool> DeleteExpenseAsync(CancellationToken token, int id);
 }

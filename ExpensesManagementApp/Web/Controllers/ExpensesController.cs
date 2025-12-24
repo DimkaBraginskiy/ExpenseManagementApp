@@ -185,4 +185,25 @@ public class ExpensesController : ControllerBase
             return StatusCode(500, new { Error = "Internal server error" });
         }
     }
+
+    [HttpDelete]
+    [Authorize(Roles = "User")]
+    public async Task<IActionResult> DeleteExpenseAsync(CancellationToken token, int id)
+    {
+        try
+        {
+            var result = await _expensesService.DeleteExpenseAsync(token, id);
+
+            if (result)
+            {
+                return Ok($"Expense with id {id} deleted successfully");
+            }
+
+            return BadRequest($"Could not delete expense with id {id}");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 }
