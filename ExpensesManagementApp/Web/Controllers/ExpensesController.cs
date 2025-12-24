@@ -21,7 +21,7 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpGet("")]
-    [Authorize]
+    [Authorize(Roles = "User")]
     public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetAllExpensesByUserIdAsync(CancellationToken token)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -46,7 +46,7 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpGet("category/{categoryName}")]
-    [Authorize]
+    [Authorize(Roles = "User")]
     public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetExpensesByCategoryNameAsync(
         CancellationToken token, string categoryName)
     {
@@ -81,7 +81,7 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpGet("dateRange")]
-    [Authorize]
+    [Authorize(Roles = "User")]
     public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetExpensesByDateRangeAsync(
         CancellationToken token,
         [FromQuery] DateTimeOffset startDate,
@@ -123,7 +123,7 @@ public class ExpensesController : ControllerBase
     }
     
     [HttpGet("issuer/{issuerName}")]
-    [Authorize]
+    [Authorize(Roles = "User")]
     public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetExpensesByIssuerAsync(CancellationToken token, string issuerName)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -157,7 +157,7 @@ public class ExpensesController : ControllerBase
 
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> CreateExpenseAsync(CancellationToken token, [FromBody] ExpenseRequestDto dto)
     {
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

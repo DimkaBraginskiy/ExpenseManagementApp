@@ -15,11 +15,15 @@ public class Expense
     [MaxLength(100)]
     public string Description { get; set; } = null!;
     
+    //Registered User
     [ForeignKey("User")]
-    public int UserId { get; set; }
-    public User User { get; set; } = null!;
+    public int? UserId { get; set; }
+    public User? User { get; set; } = null!;
     
-    //Nullable
+    //Anonymous user
+    public Guid? SessionId { get; set; }
+    
+    
     [ForeignKey("Category")]
     public int? CategoryId { get; set; }
 

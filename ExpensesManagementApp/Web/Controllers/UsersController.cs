@@ -18,6 +18,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> CreateUserAsync(CancellationToken token, [FromBody] RegisterUserDto dto)
     {
         try
@@ -33,6 +34,7 @@ public class UsersController : ControllerBase
 
 
     [HttpGet]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetUsersAsync(CancellationToken token)
     {
         try
@@ -48,6 +50,7 @@ public class UsersController : ControllerBase
 
 
     [HttpDelete]
+    [Authorize(Roles = "Admin,User")]
     public async Task<ActionResult> DeleteUserAsync(CancellationToken token, int id)
     {
         try

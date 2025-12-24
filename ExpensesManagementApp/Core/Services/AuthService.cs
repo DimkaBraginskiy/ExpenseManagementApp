@@ -49,6 +49,9 @@ public class AuthService : IAuthService
         {
             return new BadRequestObjectResult(result.Errors);
         }
+
+        await _userManager.AddToRoleAsync(user, "User");
+        
         return new OkObjectResult("User registered successfully!");
     }
 
@@ -77,6 +80,12 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+        
+        var roles = await _userManager.GetRolesAsync(user);
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig["Key"]!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -54,6 +54,7 @@ builder.Services.AddIdentityCore<User>(options =>  // Note: AddIdentityCore<User
     {
         options.User.RequireUniqueEmail = true;
     })
+    .AddRoles<IdentityRole<int>>()
     .AddEntityFrameworkStores<AppDbContext>()  // Still uses EF stores
     .AddApiEndpoints()  // Keeps API endpoints for login/register
     .AddDefaultTokenProviders()
@@ -93,5 +94,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapIdentityApi<User>();
+
+using (var scope = app.Services.CreateScope())
+{
+    await RoleSeeder.SeedAsync(scope.ServiceProvider);
+    await AdminSeeder.SeedAsync(scope.ServiceProvider);
+}
 
 app.Run();
