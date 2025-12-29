@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
-import {Card} from "../Card.tsx";
+// import {Card} from "../Card.tsx";
 
 export function Dashboard(){
-    const [expenses, setExpenses] = useState([]);
+    //const [expenses, setExpenses] = useState([]);
     const [error, setError] = useState('');
     
     useEffect(() => {
@@ -26,8 +26,8 @@ export function Dashboard(){
                     throw new Error('Failed to get response');
                 }
                 
-                const data = await response.json();
-                setExpenses(data);
+                //const data = await response.json();
+                //setExpenses(data);
             }catch(err: any){
                 setError('Error: ' + err.message);
             }
@@ -40,12 +40,12 @@ export function Dashboard(){
             <h1>My Expenses Dashboard</h1>
             {error && <p>{error}</p>}
             
-            {expenses.map((exp: any) => (
-                <Card
-                    description={exp.description}
-                    amount={exp.amount}
-                />
-            ))}
+            {/*{expenses.map((exp: any) => (*/}
+            {/*    <Card*/}
+            {/*        description={exp.description}*/}
+            {/*        amount={exp.amount}*/}
+            {/*    />*/}
+            {/*))}*/}
             
         </div>
     );
