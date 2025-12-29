@@ -1,8 +1,7 @@
-import './App.css'
 import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
-import {Register} from "./pages/Register.tsx";
-import {Login} from "./pages/Login.tsx";
-import {Dashboard} from "./pages/Dashboard.tsx";
+import {Register} from "../src/pages/Register/Register.tsx";
+import {Login} from "../src/pages/Login/Login.tsx";
+import {Dashboard} from "../src/pages/Dashboard/Dashboard.tsx";
 import {ProtectedRoute} from "../auth/ProtectedRoute.tsx";
 
 

@@ -1,15 +1,15 @@
 import {useEffect, useState} from "react";
-// import {Card} from "../Card.tsx";
+
+import styles from "./Dashboard.module.css"
 
 export function Dashboard(){
-    //const [expenses, setExpenses] = useState([]);
     const [error, setError] = useState('');
     
     useEffect(() => {
         const fetchExpenses = async () => {
             const token = localStorage.getItem('accessToken');
             if(token == null){
-                setError('Token not found');
+                setError('');
                 return;
             }
             
@@ -26,8 +26,7 @@ export function Dashboard(){
                     throw new Error('Failed to get response');
                 }
                 
-                //const data = await response.json();
-                //setExpenses(data);
+                
             }catch(err: any){
                 setError('Error: ' + err.message);
             }
@@ -36,17 +35,10 @@ export function Dashboard(){
     }, [])
     
     return(
-        <div>
-            <h1>My Expenses Dashboard</h1>
-            {error && <p>{error}</p>}
-            
-            {/*{expenses.map((exp: any) => (*/}
-            {/*    <Card*/}
-            {/*        description={exp.description}*/}
-            {/*        amount={exp.amount}*/}
-            {/*    />*/}
-            {/*))}*/}
-            
-        </div>
+       <div className={styles.container}>
+           <header className={styles.header}>ok header</header>
+           
+           <footer className={styles.footer}>ok footer</footer>
+       </div>
     );
 }

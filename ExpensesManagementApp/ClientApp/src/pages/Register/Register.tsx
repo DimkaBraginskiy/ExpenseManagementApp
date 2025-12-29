@@ -1,46 +1,38 @@
 ﻿import {useState} from "react";
-
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
-import {authService} from "../../services/AuthService.tsx";
 
-import styles from "../PagesStyles.module.css"
+import styles from "./Register.module.css";
 
-export function Login(){
+export function Register(){
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    const navigate = useNavigate();
+    const navigate = useNavigate()
     const [error, setError] = useState('');
 
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
         setError('')
 
         try{
 
-            const response = await fetch('/api/Auth/login', {
+            const response = await fetch('/api/Auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify({ email, password})
             })
-            
 
             if(response.ok){
-                alert('Login succeeded')
+                alert('Registration succeeded')
 
-                const loginData = await response.json();
-                
-                authService.saveToken(loginData.token, loginData.refreshToken);
-                
                 setEmail('')
                 setPassword('')
-                
-                navigate('/dashboard');
+                navigate('/login');
             }else{
-                alert('Login failed')
+                alert('Registration failed')
             }
 
         }catch (error){
@@ -52,10 +44,11 @@ export function Login(){
     }
 
     return (
-        <div className={styles.container}> {/* Use styles.className */}
-            <h1 className={styles.title}>Welcome Back</h1>
+        <div className={styles.container}>
 
-            <form onSubmit={handleLogin} className={styles.form}>
+            <h1 className={styles.title}>Register</h1>
+
+            <form onSubmit={handleRegister} className={styles.form}>
                 {error && <div className={styles.error}>{error}</div>}
 
                 <div className={styles.formGroup}>
@@ -88,19 +81,15 @@ export function Login(){
                     />
                 </div>
 
-                <button
-                    type="submit"
-                    className={styles.button}
-                    disabled={isLoading}
-                >
-                    {isLoading ? 'Logging in...' : 'Login'}
-                </button>
-
-                <div
-                    className={styles.link}
-                    onClick={() => navigate('/register')}
-                >
-                    Don't have an account? Sign up
+                <div>
+                    <button
+                        type="submit"
+                        id="submit"
+                        className={styles.button}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Registering...' : 'Register'}
+                    </button>
                 </div>
             </form>
         </div>
