@@ -29,11 +29,12 @@ export function Login(){
             
 
             if(response.ok){
-                alert('Login succeeded')
 
                 const loginData = await response.json();
+
+                alert('Login succeeded token:\n' + loginData.accessToken + ' refresh token:\n' + loginData.refreshToken)
                 
-                authService.saveToken(loginData.token, loginData.refreshToken);
+                authService.saveToken(loginData.accessToken, loginData.refreshToken);
                 
                 setEmail('')
                 setPassword('')

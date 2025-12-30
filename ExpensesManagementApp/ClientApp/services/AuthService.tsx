@@ -1,12 +1,16 @@
 ﻿export const authService = {
     
-    saveToken: (token: string, refreshToken: string) => {
-        localStorage.setItem('access_token', token); 
+    saveToken: (accessToken: string, refreshToken: string) => {
+        localStorage.setItem('access_token', accessToken); 
         localStorage.setItem('refresh_token', refreshToken);
     },
     
-    getToken: ()=>{
+    getAccessToken: ()=>{
         return localStorage.getItem('access_token');
+    },
+
+    getRefreshToken: ()=>{
+        return localStorage.getItem('refresh_token');
     },
     
     isLoggedIn: () => {
