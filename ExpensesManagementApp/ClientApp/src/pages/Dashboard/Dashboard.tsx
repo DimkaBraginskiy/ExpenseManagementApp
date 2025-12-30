@@ -17,6 +17,7 @@ export function Dashboard(){
             if(token == null){
                 setError('Token not found!');
                 setLoading(false);
+                setToken('')
                 return;
             }
             
@@ -50,9 +51,6 @@ export function Dashboard(){
 
     return (
         <div className={styles.container}>
-            <header className={styles.header}>
-                My Dashboard
-            </header>
 
 
             <main className={styles.main}>
@@ -74,10 +72,6 @@ export function Dashboard(){
 
                     
             </main>
-            
-            <footer className={styles.footer}>
-                • 2025 Expense Management App •
-            </footer>
         </div>
     );
 }

@@ -7,29 +7,12 @@
     margin: 0;
 }
 
-.header {
-    background: #4c59b8;
-    color: white;
-    padding: 1.5rem 2rem;
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: 600;
-}
-
 .main {
     flex: 1;
     padding: 2rem;
     color: white;
 }
 
-.footer {
-    background: #434ba3;
-    color: #c0c7ff;
-    text-align: center;
-    padding: 1rem 0;
-    font-size: 0.9rem;
-    margin-top: auto;
-}
 
 /*expense styles*/
 .expensesGrid {

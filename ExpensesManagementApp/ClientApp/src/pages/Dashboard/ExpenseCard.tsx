@@ -15,7 +15,7 @@ export function ExpenseCard({ expense }: ExpenseCardProps) {
                     {expense.totalAmount.toFixed(2)}
                     {/* Add currency display if needed */}
                     {` ${expense.currency?.name}`}
-                </span>
+                </span> 
             </div>
 
             <div className={styles.expenseFooter}>
