@@ -39,7 +39,7 @@ export function Login(){
                 setEmail('')
                 setPassword('')
                 
-                navigate('/dashboard');
+                navigate('/');
             }else{
                 alert('Login failed')
             }

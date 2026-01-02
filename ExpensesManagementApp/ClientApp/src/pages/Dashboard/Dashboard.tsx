@@ -35,8 +35,8 @@ export function Dashboard(){
                 }
 
                 const data : any = await response.json();
-                console.log("API Response:", data);
-                console.log("First expense:", data[0]);
+                // console.log("API Response:", data);
+                // console.log("First expense:", data[0]);
                 
                 setExpenses(data);
             }catch(err: any){
@@ -65,7 +65,7 @@ export function Dashboard(){
                 {!loading && !error && expenses.length > 0 && (
                     <div className={styles.expensesGrid}>
                         {expenses.map((expense) => (
-                            <ExpenseCard key={expense.description} expense={expense} />
+                            <ExpenseCard key={expense.id} expense={expense} />
                         ))}
                     </div>
                 )}

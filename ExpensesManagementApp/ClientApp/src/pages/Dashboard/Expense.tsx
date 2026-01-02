@@ -1,5 +1,6 @@
 ﻿// Expense.tsx or create a separate types file
 export interface Expense {
+    id : number;
     totalAmount: number;
     date: string;  // C# DateTime serializes to string
     description: string;

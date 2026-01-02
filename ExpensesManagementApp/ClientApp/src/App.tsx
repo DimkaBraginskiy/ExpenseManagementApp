@@ -23,7 +23,7 @@ function App() {
                             <Login/>
                         </Layout>
                 }/>
-                <Route path={"/dashboard"} element=
+                <Route path={"/"} element=
                     {
                     <Layout showHeader={true} showFooter={true}>
                         <Dashboard/>
@@ -36,8 +36,6 @@ function App() {
                             <Me/>
                         </Layout>
                     }/>
-
-                <Route path="/" element={<Navigate to = "/dashboard" />} />
             </Routes>
         </BrowserRouter>
     )
