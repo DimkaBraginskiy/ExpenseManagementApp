@@ -24,6 +24,7 @@ public class ExpensesService : IExpensesService
                 .Where(e => e.UserId == id)
                 .Include(e => e.Category)
                 .Include(e => e.Currency)
+                .Include(e => e.Products)
                 .ToListAsync(token);
 
         if (expenses.Count == 0)
@@ -35,9 +36,9 @@ public class ExpensesService : IExpensesService
         
         foreach (var expense in expenses)
         {
-            var dto = ExpenseMapper.toDto(token, expense);
+            var dto = await ExpenseMapper.toDto(token, expense);
             
-            expenseDtos.Add(dto.Result);
+            expenseDtos.Add(dto);
         }
 
         return expenseDtos;

@@ -1,6 +1,8 @@
-﻿using ExpensesManagementApp.Services;
+﻿using System.Security.Claims;
+using ExpensesManagementApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using ExpensesManagementApp.DTOs.Request;
+using ExpensesManagementApp.DTOs.Response;
 using Microsoft.AspNetCore.Authorization;
 
 
@@ -45,6 +47,30 @@ public class UsersController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<ActionResult<UserDetailedResponseDto>> GetInfoAboutCurrentUserAsync(CancellationToken token)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized(new { Error = "Invalid user" });    
+        }
+
+        try
+        {
+            var user = await _usersService.getUserByIdAsync(token, userId);
+
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
         }
     }
 

@@ -27,6 +27,8 @@
 
     <ItemGroup>
       <Folder Include="ClientApp\" />
+      <Folder Include="ClientApp\public\" />
+      <Folder Include="ClientApp\src\assets\" />
       <Folder Include="Core\Exceptions\" />
     </ItemGroup>
 

@@ -20,8 +20,25 @@ public class ExpenseMapper
             ? "None"
             : expense.Issuer.Name.Trim();
 
+        decimal totalAmount = 0;
+        var productDtos = new List<ProductResponseDto>();
+        
+        foreach(var product in expense.Products)
+        {
+            var productDto = new ProductResponseDto()
+            {
+                Name = product.Name,
+                Price = product.Price,
+                Quantity = product.Quantity
+            };
+            totalAmount += productDto.Quantity * productDto.Price;
+            
+            productDtos.Add(productDto);
+        }
+
         var exp = new ExpenseResponseDto()
         {
+            Id = expense.Id,
             Date = expense.Date,
             Description = expense.Description,
             Category = new CategoryResponseDto()
@@ -35,7 +52,9 @@ public class ExpenseMapper
             Currency = new CurrencyResponseDto()
             {
                 Name = currencyName
-            }
+            },
+            Products = productDtos,
+            TotalAmount = totalAmount
         };
 
         return exp;

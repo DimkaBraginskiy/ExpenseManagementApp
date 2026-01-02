@@ -39,5 +39,5 @@ public class Expense
     public int? CurrencyId { get; set; }
     public Currency Currency { get; set;} = null!;
 
-    public IEnumerable<Product> Products = new List<Product>();
+    public IEnumerable<Product> Products { get; set; }= new List<Product>();
 } 

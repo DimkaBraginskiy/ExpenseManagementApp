@@ -3,6 +3,7 @@ using ExpensesManagementApp.Core.Models;
 using ExpensesManagementApp.Data;
 using ExpensesManagementApp.DTOs.Request;
 using ExpensesManagementApp.DTOs.Response;
+using ExpensesManagementApp.Infrastructure.Mapper;
 using ExpensesManagementApp.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +35,25 @@ public class UsersService : IUsersService
         }
 
         return response;
+    }
+
+    public async Task<UserDetailedResponseDto> getUserByIdAsync(CancellationToken token, int userId)
+    {
+        if (userId.Equals(null))
+        {
+            throw new ArgumentException("userId can not be null");
+        }
+
+        var user = await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync(token);
+
+        if (user.Equals(null))
+        {
+            throw new ArgumentException("User not found");
+        }
+
+        var userDto = UserMapper.toDto(token, user);
+
+        return userDto;
     }
 
     public async Task CreateUserAsync(CancellationToken token, RegisterUserDto dto)
