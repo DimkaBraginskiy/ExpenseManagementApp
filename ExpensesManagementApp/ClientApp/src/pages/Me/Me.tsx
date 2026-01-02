@@ -20,7 +20,7 @@ export function Me(){
             }
 
             try{
-                const response = await fetch('api/Users/me', {
+                const response = await fetch('/api/Users/me', {
                     method: 'GET',
                     headers : {
                         'Authorization' : `Bearer ${token}`,
@@ -32,8 +32,21 @@ export function Me(){
                     throw new Error("User profile not found");
                 }
 
-                const data : any = await response.json();
-                setProfile(data);
+                const data = await response.json();
+                
+                console.log("Parsed json: " + data);
+                console.log("userName:", data.userName);  // Should be "test@gmail.com"
+                console.log("email:", data.email);
+                console.log("phoneNumber:", data.phoneNumber);
+                
+                const profileData : Profile = {
+                    UserName : data.userName,
+                    Email : data.email,
+                    PhoneNumber : data.phoneNumber,
+                    AccountCreationDate : data.accountCreationDate
+                };
+                
+                setProfile(profileData);
             }catch(err : any){
                 setError('Error: ' + err.message);
             }finally {

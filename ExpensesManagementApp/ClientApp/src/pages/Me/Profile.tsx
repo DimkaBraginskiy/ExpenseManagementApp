@@ -1,6 +1,6 @@
 ﻿export interface Profile {
     UserName?: string;
     Email?: string;
-    PhoneNumber?: string;
-    AccountCreationDate?: Date;
+    PhoneNumber?: string | null;
+    AccountCreationDate?: string | Date | null;
 }
