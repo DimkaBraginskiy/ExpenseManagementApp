@@ -1,42 +1,38 @@
 ﻿import {useState} from "react";
-
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
-import {authService} from "../../services/AuthService.tsx";
 
-export function Login(){
+import styles from "./Register.module.css";
+
+export function Register(){
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    const navigate = useNavigate();
+    const navigate = useNavigate()
+    const [error, setError] = useState('');
 
 
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
+        setError('')
 
         try{
 
-            const response = await fetch('/api/Auth/login', {
+            const response = await fetch('/api/Auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json'},
                 body: JSON.stringify({ email, password})
             })
-            
 
             if(response.ok){
-                alert('Login succeeded')
+                alert('Registration succeeded')
 
-                const loginData = await response.json();
-                
-                authService.saveToken(loginData.token, loginData.refreshToken);
-                
                 setEmail('')
                 setPassword('')
-                
-                navigate('/dashboard');
+                navigate('/login');
             }else{
-                alert('Login failed')
+                alert('Registration failed')
             }
 
         }catch (error){
@@ -48,33 +44,40 @@ export function Login(){
     }
 
     return (
-        <div className="App">
+        <div className={styles.container}>
 
-            <h1>Login</h1>
+            <h1 className={styles.title}>Register</h1>
 
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleRegister} className={styles.form}>
+                {error && <div className={styles.error}>{error}</div>}
 
-                <div>
-                    <label>Email</label>
+                <div className={styles.formGroup}>
+                    <label htmlFor="email" className={styles.label}>
+                        Email Address
+                    </label>
                     <input
                         type="email"
                         id="email"
-                        value={email} //very important to clear the field correctly
+                        className={styles.input}
+                        value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        placeholder="example@gmail.com"
+                        placeholder="you@example.com"
                     />
                 </div>
 
-                <div>
-                    <label>Password</label>
+                <div className={styles.formGroup}>
+                    <label htmlFor="password" className={styles.label}>
+                        Password
+                    </label>
                     <input
                         type="password"
                         id="password"
+                        className={styles.input}
                         value={password}
-                        onChange={(p) => setPassword(p.target.value)}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
-                        placeholder="Enter your password here"
+                        placeholder="Enter your password"
                     />
                 </div>
 
@@ -82,9 +85,10 @@ export function Login(){
                     <button
                         type="submit"
                         id="submit"
+                        className={styles.button}
                         disabled={isLoading}
                     >
-                        {isLoading ? 'Logging in...' : 'Login'}
+                        {isLoading ? 'Registering...' : 'Register'}
                     </button>
                 </div>
             </form>
