@@ -3,7 +3,7 @@
     height: 100vh;
     min-height: 100vh;
     box-sizing: border-box;
-    background: #5a67d8;
+    background: rgba(122, 122, 122, 0.08);
     top: 0;
     left: 0;
     
@@ -46,7 +46,7 @@
 .input {
     width: 100%;
     padding: 0.75rem;
-    border: 2px solid #e2e8f0;
+    border: 2px solid #575757;
     border-radius: 15px;
     font-size: 1rem;
     transition: border-color 0.3s;
@@ -55,13 +55,13 @@
 
 .input:focus {
     outline: none;
-    border-color: #667eea;
+    border-color: #939393;
 }
 
 .button {
     width: 100%;
     padding: 0.75rem;
-    background: #667eea;
+    background: #616161;
     color: white;
     border: none;
     border-radius: 6px;
@@ -72,11 +72,11 @@
 }
 
 .button:hover:not(:disabled) {
-    background: #5a67d8;
+    background: #323232;
 }
 
 .button:disabled {
-    background: #a0aec0;
+    background: #838383;
     cursor: not-allowed;
 }
 
@@ -87,7 +87,7 @@
 }
 
 .link {
-    color: #667eea;
+    color: #4c4c4c;
     text-align: center;
     margin-top: 1rem;
     cursor: pointer;
