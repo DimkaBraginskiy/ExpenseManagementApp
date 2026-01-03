@@ -19,4 +19,5 @@ public interface IExpensesService
 
     public Task<bool> DeleteExpenseAsync(CancellationToken token, int id);
     public Task<ExpenseResponseDto> GetUserByIdAsync(CancellationToken token, int id);
+    public Task<ExpenseResponseDto> UpdateExpenseAsync(CancellationToken token, int id, ExpenseRequestDto dto);
 }

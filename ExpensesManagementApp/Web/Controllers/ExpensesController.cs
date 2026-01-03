@@ -222,4 +222,20 @@ public class ExpensesController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpPut("id/{id}")]
+    [Authorize(Roles = "User")]
+    public async Task<IActionResult> UpdateExpenseAsync(CancellationToken token, int id, ExpenseRequestDto dto)
+    {
+        try
+        {
+            var res = await _expensesService.UpdateExpenseAsync(token, id, dto);
+            
+            return Ok(res);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Coudl not update Expense: " + ex.Message);
+        }
+    }
 }

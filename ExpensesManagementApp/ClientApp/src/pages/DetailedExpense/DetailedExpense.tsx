@@ -169,6 +169,12 @@ export function DetailedExpense(){
                     <button onClick={handleDelete} className={styles.deleteButton}>
                         Delete Expense
                     </button>
+                    <button
+                        onClick={() => navigate(`/expenses/${id}/edit`)}
+                        className={styles.editButton}
+                    >
+                        Edit Expense
+                    </button>
                 </div>
 
 

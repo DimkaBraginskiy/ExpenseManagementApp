@@ -459,3 +459,19 @@ select.detailValue {
 .deleteButton:active {
     transform: translateY(0);
 }
+
+/*edit button*/
+.editButton {
+    background: #edc914;
+    color: #ffffff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.editButton:hover {
+    background: #7c6a0d;
+}

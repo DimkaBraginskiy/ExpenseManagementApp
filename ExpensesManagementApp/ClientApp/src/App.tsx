@@ -7,6 +7,7 @@ import {Layout} from "./components/layout/Layout.tsx";
 import {Me} from "./pages/Me/Me.tsx";
 import {DetailedExpense} from "./pages/DetailedExpense/DetailedExpense.tsx";
 import {CreateExpense} from "./pages/CreateExpense/CreateExpense.tsx";
+import {EditExpense} from "./pages/EditExpense/EditExpense.tsx";
 
 
 function App() {
@@ -53,6 +54,14 @@ function App() {
                             <CreateExpense/>
                         </Layout>
                     } 
+                />
+                
+                <Route path={"/expenses/:id/edit"} element=
+                    {
+                        <Layout showHeader={true} showFooter={true}>
+                            <EditExpense/>
+                        </Layout>
+                    }
                 />
             </Routes>
         </BrowserRouter>
