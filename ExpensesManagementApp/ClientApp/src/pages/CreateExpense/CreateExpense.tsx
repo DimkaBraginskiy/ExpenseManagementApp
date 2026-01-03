@@ -1,15 +1,16 @@
 ﻿import styles from "./CreateExpense.module.css";
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {authService} from "../../../services/AuthService.tsx";
 
 export function CreateExpense() {
     const navigate = useNavigate();
     const [expense, setExpense] = useState({
         date: "",
         description: "",
-        category: "",
-        issuer: "",
-        currency: "",
+        categoryId: "",
+        issuerId: "",
+        currencyId: "",
         products: [
             {
                 name: "",
@@ -19,7 +20,40 @@ export function CreateExpense() {
         ]
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [categories, setCategories] = useState([]);
+    const [currencies, setCurrencies] = useState([]);
+    const [issuers, setIssuers] = useState([]);
+    const [loadingOptions, setLoadingOptions] = useState(true);
 
+    useEffect(() => {
+        const fetchOptions = async () => {
+            try{
+                setLoadingOptions(true);
+                
+                const [categoryRes, currencyRes, issuerRes] = await Promise.all([
+                    fetch("/api/category"),
+                    fetch("/api/Currency"),
+                    fetch("/api/Issuer")
+                ]);
+
+                const cats = await categoryRes.json();
+                const iss = await issuerRes.json();
+                const curs = await currencyRes.json();
+                
+                setCategories(cats);
+                setIssuers(iss);
+                setCurrencies(curs);
+            }catch(error : any){
+                console.log("Failed to load options: " + error.message)
+            }finally {
+                setLoadingOptions(false);
+            }
+        };
+        
+        fetchOptions();
+    }, []);
+    
+    
     const validateExpense = () => {
         const newErrors: Record<string, string> = {};
 
@@ -36,16 +70,16 @@ export function CreateExpense() {
             newErrors.description = "Maximum 100 characters allowed";
 
         // Category
-        if (!expense.category)
+        if (!expense.categoryId)
             newErrors.category = "Category is required";
 
         // Issuer
-        if (!expense.issuer)
+        if (!expense.issuerId)
             newErrors.issuer = "Issuer is required";
 
         // Currency
-        if (!/^[A-Z]{3}$/.test(expense.currency))
-            newErrors.currency = "Currency must be a 3-letter ISO code";
+        if (!expense.currencyId)
+            newErrors.currency = "Currency is required";
 
         // Products
         expense.products.forEach((product, index) => {
@@ -64,15 +98,58 @@ export function CreateExpense() {
         return newErrors;
     };
 
+    const getCategoryName = (id) => {
+        const cat = categories.find(c => c.id === Number(id) || c.id === id);
+        return cat ? cat.name : "";
+    };
 
-    const handleSubmit = () => {
+    const getIssuerName = (id) => {
+        const iss = issuers.find(i => i.id === Number(id) || i.id === id);
+        return iss ? iss.name : "";
+    };
+
+    const getCurrencyName = (id) => {
+        const cur = currencies.find(c => c.id === Number(id) || c.id === id);
+        return cur ? cur.name : "";
+    };
+
+
+    const handleSubmit = async () => {
         const validationErrors = validateExpense();
         setErrors(validationErrors);
 
         if (Object.keys(validationErrors).length > 0)
             return;
 
-        console.log("Expense is valid:", expense);
+        const token = await authService.getAccessToken();
+        
+        try {
+            const response = await fetch("/api/expenses", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    date: new Date(expense.date).toISOString(),
+                    description: expense.description,
+                    category: { name: getCategoryName(expense.categoryId) },
+                    issuer: { name: getIssuerName(expense.issuerId) },
+                    currency: { name: getCurrencyName(expense.currencyId) },
+                    products: expense.products.map(p => ({
+                        name: p.name.trim(),
+                        price: Number(p.price),
+                        quantity: Number(p.quantity)
+                    }))
+                })
+            });
+
+            if (!response.ok) throw new Error("Failed");
+
+            navigate(-1); // go back on success
+        } catch (err) {
+            setErrors(prev => ({ ...prev, submit: "Failed to create expense" }));
+        }
     };
     
     
@@ -90,24 +167,28 @@ export function CreateExpense() {
                     {/* Expense details */}
                     <div className={styles.expenseDetails}>
                         <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>Date</span>
-                            <input
-                                type="datetime-local"
-                                max={new Date().toISOString().slice(0,16)}
-                                className={styles.detailValue}
-                                
-                                value={expense.date}
-                                onChange={e =>
-                                    setExpense({ ...expense, date: e.target.value })
-                                }
-                            />
-                            
                             {errors.date && (
                                 <div className={styles.errorText}>{errors.date}</div>
                             )}
+                            
+                            <span className={styles.detailLabel}>Date</span>
+                            <input
+                                type="datetime-local"
+                                max={new Date().toISOString().slice(0, 16)}
+                                className={styles.detailValue}
+
+                                value={expense.date}
+                                onChange={e =>
+                                    setExpense({...expense, date: e.target.value})
+                                }
+                            />
                         </div>
 
                         <div className={styles.detailItem}>
+                            {errors.description && (
+                                <div className={styles.errorText}>{errors.description}</div>
+                            )}
+                            
                             <span className={styles.detailLabel}>Description</span>
                             <input
                                 type="text"
@@ -116,82 +197,60 @@ export function CreateExpense() {
                                 className={styles.detailValue}
                                 placeholder="Expense description"
                                 required
-                                
+
                                 value={expense.description}
-                                onChange={e => 
-                                    setExpense({ ...expense, description: e.target.value})
+                                onChange={e =>
+                                    setExpense({...expense, description: e.target.value})
                                 }
                             />
-
-                            {errors.description && (
-                                <div className={styles.errorText}>{errors.description}</div>
-                            )}
                         </div>
 
                         <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>Category</span>
-                            <input
-                                type="text"
-                                minLength={3}
-                                maxLength={50}
+                            <select
                                 className={styles.detailValue}
-                                placeholder="Category name"
-                                required
-                                
-                                value={expense.category}
-                                onChange={e =>
-                                    setExpense({ ...expense, category: e.target.value })
-                                }
-                            />
-
-                            {errors.category && (
-                                <div className={styles.errorText}>{errors.category}</div>
-                            )}
+                                value={expense.categoryId}
+                                onChange={e => setExpense({...expense, categoryId: e.target.value})}
+                                disabled={loadingOptions}
+                            >
+                                <option value="">Select category</option>
+                                {categories.map(cat => (
+                                    <option key={cat.id} value={cat.id}>
+                                        {cat.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>Issuer</span>
-                            <input
-                                type="text"
-                                minLength={3}
-                                maxLength={50}
+                            <select
                                 className={styles.detailValue}
-                                placeholder="Issuer name"
-                                required
-                                
-                                value={expense.issuer}
-                                onChange={e =>
-                                    setExpense({ ...expense, issuer: e.target.value })
-                                }
-                            />
-
-                            {errors.issuer && (
-                                <div className={styles.errorText}>{errors.issuer}</div>
-                            )}
+                                value={expense.issuerId}
+                                onChange={e => setExpense({...expense, issuerId: e.target.value})}
+                                disabled={loadingOptions}
+                            >
+                                <option value="">Select issuer</option>
+                                {issuers.map(iss => (
+                                    <option key={iss.id} value={iss.id}>
+                                        {iss.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className={styles.detailItem}>
-                            <span className={styles.detailLabel}>Currency</span>
-                            <input
-                                type="text"
-                                required
-                                pattern="[A-Z]{3}"
-                                title="3-letter ISO currency code (e.g. USD)"
+                            <select
                                 className={styles.detailValue}
-                                placeholder="USD"
-
-                                value={expense.currency}
-                                onChange={e =>
-                                    setExpense({
-                                        ...expense,
-                                        currency: e.target.value.toUpperCase()
-                                    })
-                                }
-                            />
-
-                            {errors.currency && (
-                                <div className={styles.errorText}>{errors.currency}</div>
-                            )}
+                                value={expense.currencyId}
+                                onChange={e => setExpense({...expense, currencyId: e.target.value})}
+                                disabled={loadingOptions}
+                            >
+                                <option value="">Select currency</option>
+                                {currencies.map(curr => (
+                                    <option key={curr.id} value={curr.id}>
+                                        {curr.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 
@@ -209,7 +268,13 @@ export function CreateExpense() {
                             </div>
 
                             <div className={styles.productDetails}>
-                                <div className={styles.detailItem}>
+                            <div className={styles.detailItem}>
+                                {errors["products.0.name"] && (
+                                    <div className={styles.errorText}>
+                                        {errors["products.0.name"]}
+                                    </div>
+                                )}
+                                
                                     <span className={styles.detailLabel}>Name</span>
                                     <input
                                         type="text"
@@ -225,15 +290,15 @@ export function CreateExpense() {
                                             setExpense({...expense, products});
                                         }}
                                     />
-
-                                    {errors["products.0.name"] && (
-                                        <div className={styles.errorText}>
-                                            {errors["products.0.name"]}
-                                        </div>
-                                    )}
                                 </div>
 
                                 <div className={styles.detailItem}>
+                                    {errors["products.0.price"] && (
+                                        <div className={styles.errorText}>
+                                            {errors["products.0.price"]}
+                                        </div>
+                                    )}
+                                    
                                     <span className={styles.detailLabel}>Price Per Item</span>
                                     <input
                                         type="number"
@@ -250,15 +315,15 @@ export function CreateExpense() {
                                             setExpense({...expense, products});
                                         }}
                                     />
-
-                                    {errors["products.0.price"] && (
-                                        <div className={styles.errorText}>
-                                            {errors["products.0.price"]}
-                                        </div>
-                                    )}
                                 </div>
 
                                 <div className={styles.detailItem}>
+                                    {errors["products.0.quantity"] && (
+                                        <div className={styles.errorText}>
+                                            {errors["products.0.quantity"]}
+                                        </div>
+                                    )}
+                                    
                                     <span className={styles.detailLabel}>Quantity</span>
                                     <input
                                         type="number"
@@ -275,12 +340,6 @@ export function CreateExpense() {
                                             setExpense({...expense, products});
                                         }}
                                     />
-
-                                    {errors["products.0.quantity"] && (
-                                        <div className={styles.errorText}>
-                                            {errors["products.0.quantity"]}
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         </div>

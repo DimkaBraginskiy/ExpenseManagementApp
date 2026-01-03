@@ -11,7 +11,7 @@ export function ProductCard({ product } : ProductCardProps){
     return(
         <div className={styles.productCard}>
             <div className={styles.productHeader}>
-                <h4 className={styles.productName}></h4>
+                <h4 className={styles.productName}>{product.name}</h4>
                 <span className={styles.productSubtotal}>${subtotal.toFixed(2)}</span>
             </div>
 

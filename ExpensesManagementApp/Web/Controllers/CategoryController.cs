@@ -17,7 +17,6 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet("")]
-    [Authorize(Roles = "User")]
     public async Task<ActionResult<IEnumerable<CategoryResponseDto>>> GetAllCategoriesAsync(CancellationToken token)
     {
         var categories = await _categoryService.GetAllCategoriesAsync(token);

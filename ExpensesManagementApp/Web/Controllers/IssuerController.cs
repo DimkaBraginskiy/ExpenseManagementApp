@@ -17,7 +17,6 @@ public class IssuerController : ControllerBase
     }
 
     [HttpGet("")]
-    [Authorize(Roles = "User")]
     public async Task<ActionResult<IEnumerable<IssuerResponseDto>>> GetAllIssuersAsync(CancellationToken token)
     {
         var issuers = await _issuerService.GetAllIssuersAsync(token);

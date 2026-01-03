@@ -23,6 +23,7 @@ public class IssuerService : IIssuerService
         {
             var dto = new IssuerResponseDto()
             {
+                Id = issuer.Id,
                 Name = issuer.Name
             };
             

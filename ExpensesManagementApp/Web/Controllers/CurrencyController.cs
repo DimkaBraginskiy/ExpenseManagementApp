@@ -17,7 +17,6 @@ public class CurrencyController : ControllerBase
     }
 
     [HttpGet("")]
-    [Authorize(Roles = "User")]
     public async Task<ActionResult<IEnumerable<CurrencyResponseDto>>> GetAllCurrenciesAsync(CancellationToken token)
     {
         var currencies = await _currencyService.GetAllCurrenciesAsync(token);

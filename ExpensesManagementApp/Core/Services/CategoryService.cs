@@ -23,6 +23,7 @@ public class CategoryService : ICategoryService
         {
             var dto = new CategoryResponseDto()
             {
+                Id = category.Id,
                 Name = category.Name
             };
             

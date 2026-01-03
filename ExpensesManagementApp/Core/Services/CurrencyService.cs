@@ -23,6 +23,7 @@ public class CurrencyService : ICurrencyService
         {
             var dto = new CurrencyResponseDto()
             {
+                Id = currency.Id,
                 Name = currency.Name
             };
             
