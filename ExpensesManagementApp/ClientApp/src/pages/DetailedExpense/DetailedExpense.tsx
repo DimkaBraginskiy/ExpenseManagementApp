@@ -133,6 +133,9 @@ export function DetailedExpense(){
     return (
         <div className={styles.container}>
             <div className={styles.main}>
+                <button onClick={() => navigate(-1)} className={styles.backButton}>
+                    Go Back
+                </button>
                 <div className={styles.expenseDetails}>
                     <h2>Expense Details</h2>
 
@@ -177,7 +180,7 @@ export function DetailedExpense(){
                     <div className={styles.detailItem}>
                         <span className={styles.detailLabel}>Products Total:</span>
                         <span className={styles.detailValue}>
-                            ${productsTotal}
+                            {productsTotal}
                         </span>
                     </div>
                 </div>
@@ -190,11 +193,6 @@ export function DetailedExpense(){
                         ))}
                     </div>
                 )}
-                
-                
-                <button onClick={() => navigate(-1)} className={styles.backButton}>
-                    Go Back
-                </button>
             </div>
         </div>
     );

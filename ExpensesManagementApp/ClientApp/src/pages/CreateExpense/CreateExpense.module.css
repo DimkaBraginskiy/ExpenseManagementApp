@@ -22,16 +22,16 @@
 }
 
 .expenseCard {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgb(152, 151, 151);
     backdrop-filter: blur(10px);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .expenseCard:hover {
-    transform: translateY(-4px);
+    /*transform: translateY(-4px);*/
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
@@ -84,7 +84,7 @@
 
 /*product styles*/
 .productCard {
-    background: rgba(255, 255, 255, 0.08);
+    background: #515050;
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 0.75rem;
@@ -92,7 +92,7 @@
 }
 
 .productCard:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(89, 88, 88, 0.12);
 }
 
 .productHeader {
@@ -161,6 +161,9 @@
 
 .detailValue {
     color: white;
+    background-color: #292929;
+    border-radius: 10px;
+    padding: 10px;
     flex: 1;
 }
 

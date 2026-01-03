@@ -56,6 +56,12 @@ export function Dashboard(){
 
 
             <main className={styles.main}>
+                <button>
+                    <Link to={"/expenses/create"}>
+                        + New Expense
+                    </Link>
+                </button>
+
                 <h3> My Expenses</h3>
 
                 {/*<div>{authService.getAccessToken()*/}
@@ -67,18 +73,18 @@ export function Dashboard(){
                 {!loading && !error && expenses.length > 0 && (
                     <div className={styles.expensesGrid}>
                         {expenses.map((expense) => (
-                            <Link 
-                                to={`/expenses/${expense.id}`} 
+                            <Link
+                                to={`/expenses/${expense.id}`}
                                 className={styles.expenseLink}
                                 key={expense.id}
                             >
-                                <ExpenseCard expense={expense} />
+                                <ExpenseCard expense={expense}/>
                             </Link>
                         ))}
                     </div>
                 )}
 
-                    
+
             </main>
         </div>
     );

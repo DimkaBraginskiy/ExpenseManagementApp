@@ -1,5 +1,5 @@
 ﻿.header {
-    background: #4c59b8;
+    background: #292929;
     color: white;
     padding: 1.5rem 2rem;
     text-align: center;
@@ -9,8 +9,8 @@
 }
 
 .footer {
-    background: #434ba3;
-    color: #c0c7ff;
+    background: #292929;
+    color: #d8d8d8;
     text-align: center;
     padding: 1rem 0;
     font-size: 0.9rem;

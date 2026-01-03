@@ -6,6 +6,7 @@ import {ProtectedRoute} from "../auth/ProtectedRoute.tsx";
 import {Layout} from "./components/layout/Layout.tsx";
 import {Me} from "./pages/Me/Me.tsx";
 import {DetailedExpense} from "./pages/DetailedExpense/DetailedExpense.tsx";
+import {CreateExpense} from "./pages/CreateExpense/CreateExpense.tsx";
 
 
 function App() {
@@ -44,6 +45,14 @@ function App() {
                             <DetailedExpense/>
                         </Layout>
                     }
+                />
+                
+                <Route path={"/expenses/create"} element=
+                    {
+                        <Layout showHeader={true} showFooter={true}>
+                            <CreateExpense/>
+                        </Layout>
+                    } 
                 />
             </Routes>
         </BrowserRouter>
