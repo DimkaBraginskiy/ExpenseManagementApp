@@ -202,7 +202,7 @@ public class ExpensesController : ControllerBase
         }
     }
 
-    [HttpDelete]
+    [HttpDelete("id/{id}")]
     [Authorize(Roles = "User")]
     public async Task<IActionResult> DeleteExpenseAsync(CancellationToken token, int id)
     {

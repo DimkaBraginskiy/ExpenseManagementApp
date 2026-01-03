@@ -67,6 +67,35 @@ export function DetailedExpense(){
         loadExpense();
     }, [id]);
 
+    const handleDelete = async () => {
+        if(!window.confirm("Are you sure you want to delete that Expense? \nThis action can not be reverted!"))
+            return
+        
+        if(!id || !token)
+            return;
+        
+        try{
+            const response = await fetch(`/api/Expenses/id/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            if(!response.ok){
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error("Could not delete expense: " + errorData.error);
+            }
+
+            navigate('/');
+        }catch(error : any) {
+            setError("Could not delete expense: " + error.message);
+        }
+        
+        
+    };
+    
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             weekday: 'long',
@@ -133,9 +162,16 @@ export function DetailedExpense(){
     return (
         <div className={styles.container}>
             <div className={styles.main}>
-                <button onClick={() => navigate(-1)} className={styles.backButton}>
-                    Go Back
-                </button>
+                <div className={styles.headerActions}>
+                    <button onClick={() => navigate(-1)} className={styles.backButton}>
+                        Go Back
+                    </button>
+                    <button onClick={handleDelete} className={styles.deleteButton}>
+                        Delete Expense
+                    </button>
+                </div>
+
+
                 <div className={styles.expenseDetails}>
                     <h2>Expense Details</h2>
 

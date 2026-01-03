@@ -83,16 +83,21 @@ export function CreateExpense() {
 
         // Products
         expense.products.forEach((product, index) => {
-            if (!product.name)
+            const trimmedName = product.name.trim();
+
+            if (!trimmedName) {
                 newErrors[`products.${index}.name`] = "Product name is required";
-            else if (product.name.length < 2)
+            } else if (trimmedName.length < 2) {
                 newErrors[`products.${index}.name`] = "Minimum 2 characters required";
+            }
 
-            if (!product.price || product.price <= 0)
+            if (!product.price || product.price <= 0) {
                 newErrors[`products.${index}.price`] = "Price must be greater than 0";
+            }
 
-            if (!product.quantity || product.quantity <= 0)
+            if (!product.quantity || product.quantity <= 0) {
                 newErrors[`products.${index}.quantity`] = "Quantity must be at least 1";
+            }
         });
 
         return newErrors;
@@ -152,6 +157,30 @@ export function CreateExpense() {
         }
     };
     
+    const handleAddProduct = async () => {
+        setExpense(prev => ({
+            ...prev,
+            products: [
+                ...prev.products,
+                {
+                    name: "",
+                    price: 0,
+                    quantity: 1
+                }
+            ]
+        }));
+    };
+    
+    const handleRemoveProduct = async (indexToRemove : number) => {
+        if(expense.products.length <= 1)
+            return;
+        
+        setExpense(prev => ({
+            ...prev,
+            products: prev.products.filter((_, index) => index !== indexToRemove)
+        }));
+    };
+    
     
     
     return (
@@ -170,7 +199,7 @@ export function CreateExpense() {
                             {errors.date && (
                                 <div className={styles.errorText}>{errors.date}</div>
                             )}
-                            
+
                             <span className={styles.detailLabel}>Date</span>
                             <input
                                 type="datetime-local"
@@ -188,7 +217,7 @@ export function CreateExpense() {
                             {errors.description && (
                                 <div className={styles.errorText}>{errors.description}</div>
                             )}
-                            
+
                             <span className={styles.detailLabel}>Description</span>
                             <input
                                 type="text"
@@ -254,105 +283,120 @@ export function CreateExpense() {
                         </div>
                     </div>
 
+                    
+                    
                     <div className={styles.productsSection}>
-                        <h3>Products</h3>
+                        <h3>Products ({expense.products.length})</h3>
 
-                        <div className={styles.productCard}>
-                            <div className={styles.productHeader}>
-                                <h4 className={styles.productName}>
-                                    Product
-                                </h4>
-                                <span className={styles.productSubtotal}>
-                                    0.00
-                                </span>
-                            </div>
+                        {expense.products.map((product, index) => (
+                            
+                            <div key={index} className={styles.productCard}>
+                                <div className={styles.productHeader}>
+                                    
+                                    <h4 className={styles.productName}>
+                                        Product {index + 1}
+                                    </h4>
+                                    <span className={styles.productSubtotal}>
+                                        ${(product.price * product.quantity).toFixed(2)}
+                                    </span>
+                                    
+                                </div>
 
-                            <div className={styles.productDetails}>
-                            <div className={styles.detailItem}>
-                                {errors["products.0.name"] && (
-                                    <div className={styles.errorText}>
-                                        {errors["products.0.name"]}
+                                <div className={styles.productDetails}>
+                                    
+                                    <div className={styles.detailItem}>
+                                        {errors[`products.${index}.name`] && (
+                                            <div className={styles.errorText}>
+                                                {errors[`products.${index}.name`]}
+                                            </div>
+                                        )}
+                                        <span className={styles.detailLabel}>Name</span>
+                                        <input
+                                            type="text"
+                                            className={styles.detailValue}
+                                            placeholder="Product Name"
+                                            value={product.name}
+                                            onChange={e => {
+                                                const products = [...expense.products];
+                                                products[index].name = e.target.value;
+                                                
+                                                setExpense({...expense, products});
+                                            }}
+                                        />
+                                        
                                     </div>
+
+                                    <div className={styles.detailItem}>
+                                        {errors[`products.${index}.price`] && (
+                                            <div className={styles.errorText}>
+                                                {errors[`products.${index}.price`]}
+                                            </div>
+                                        )}
+                                        <span className={styles.detailLabel}>Price Per Item</span>
+                                        <input
+                                            type="number"
+                                            min="0.01"
+                                            step="0.01"
+                                            className={styles.detailValue}
+                                            placeholder="Price"
+                                            
+                                            value={product.price || ""}
+                                            onChange={e => {
+                                                const products = [...expense.products];
+                                                products[index].price = Number(e.target.value) || 0;
+                                                setExpense({...expense, products});
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className={styles.detailItem}>
+                                        {errors[`products.${index}.quantity`] && (
+                                            <div className={styles.errorText}>
+                                                {errors[`products.${index}.quantity`]}
+                                            </div>
+                                        )}
+                                        <span className={styles.detailLabel}>Quantity</span>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            step="1"
+                                            className={styles.detailValue}
+                                            placeholder="Quantity"
+                                            
+                                            value={product.quantity || ""}
+                                            onChange={e => {
+                                                const products = [...expense.products];
+                                                products[index].quantity = Number(e.target.value) || 1;
+                                                setExpense({...expense, products});
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Remove button only if more than one product */}
+                                {expense.products.length > 1 && (
+                                    <button
+                                        type="button"
+                                        className={styles.removeProductButton}
+                                        onClick={() => handleRemoveProduct(index)}
+                                    >
+                                        Remove Product
+                                    </button>
                                 )}
-                                
-                                    <span className={styles.detailLabel}>Name</span>
-                                    <input
-                                        type="text"
-                                        minLength={2}
-                                        maxLength={50}
-                                        className={styles.detailValue}
-                                        placeholder="Product Name"
-
-                                        value={expense.products[0].name}
-                                        onChange={e => {
-                                            const products = [...expense.products];
-                                            products[0].name = e.target.value;
-                                            setExpense({...expense, products});
-                                        }}
-                                    />
-                                </div>
-
-                                <div className={styles.detailItem}>
-                                    {errors["products.0.price"] && (
-                                        <div className={styles.errorText}>
-                                            {errors["products.0.price"]}
-                                        </div>
-                                    )}
-                                    
-                                    <span className={styles.detailLabel}>Price Per Item</span>
-                                    <input
-                                        type="number"
-                                        required
-                                        min={0.01}
-                                        step={0.01}
-                                        className={styles.detailValue}
-                                        placeholder="Price"
-
-                                        value={expense.products[0].price}
-                                        onChange={e => {
-                                            const products = [...expense.products];
-                                            products[0].price = Number(e.target.value);
-                                            setExpense({...expense, products});
-                                        }}
-                                    />
-                                </div>
-
-                                <div className={styles.detailItem}>
-                                    {errors["products.0.quantity"] && (
-                                        <div className={styles.errorText}>
-                                            {errors["products.0.quantity"]}
-                                        </div>
-                                    )}
-                                    
-                                    <span className={styles.detailLabel}>Quantity</span>
-                                    <input
-                                        type="number"
-                                        required
-                                        min={1}
-                                        step={1}
-                                        className={styles.detailValue}
-                                        placeholder="Quantity"
-
-                                        value={expense.products[0].quantity}
-                                        onChange={e => {
-                                            const products = [...expense.products];
-                                            products[0].quantity = Number(e.target.value);
-                                            setExpense({...expense, products});
-                                        }}
-                                    />
-                                </div>
                             </div>
-                        </div>
+                        ))}
 
-
-                        <div className={styles.productCard}>
-                            <button className={styles.addProductButton}>
-                                + Add product
-                            </button>
-                        </div>
-                        
                         <button
+                            type="button"
                             className={styles.addProductButton}
+                            onClick={handleAddProduct}
+                        >
+                            + Add product
+                        </button>
+
+                        <button
+                            type="button"
+                            className={styles.submitButton}
                             onClick={handleSubmit}
                         >
                             Create Expense

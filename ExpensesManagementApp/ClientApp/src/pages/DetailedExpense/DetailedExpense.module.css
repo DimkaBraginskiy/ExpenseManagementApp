@@ -19,19 +19,14 @@
 
 /* Header and navigation */
 .backButton {
-    background: none;
+    background: #676767; /* red-500 */
+    color: white;
     border: none;
-    color: #94a3b8;
-    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: color 0.2s;
-    padding: 0.8rem 1rem;
-    border-radius: 10px;
-    background: rgba(30, 41, 59, 0.4);
+    transition: all 0.2s;
 }
 
 .backButton:hover {
@@ -432,4 +427,35 @@ select.detailValue {
     .expensesGrid {
         grid-template-columns: repeat(3, 1fr);
     }
+}
+
+
+/*buttons wrappers and styles*/
+
+.headerActions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+
+.deleteButton {
+    background: #ef4444; /* red-500 */
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.deleteButton:hover {
+    background: #dc2626; /* red-600 */
+    transform: translateY(-1px);
+}
+
+.deleteButton:active {
+    transform: translateY(0);
 }
