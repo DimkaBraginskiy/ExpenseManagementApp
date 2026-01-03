@@ -81,3 +81,94 @@
     color: inherit;
     display: block;
 }
+
+/*product styles*/
+.productCard {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: background 0.2s;
+}
+
+.productCard:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.productHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.productName {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: white;
+    flex: 1;
+}
+
+.productSubtotal {
+    font-weight: 600;
+    color: #a0f7c4;
+    font-size: 1.1rem;
+}
+
+.productDetails {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.productPrice {
+    color: #a0f7c4;
+    font-weight: 500;
+}
+
+.productSeparator, .productEquals {
+    opacity: 0.6;
+}
+
+.productQuantity {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+/*expense details*/
+.expenseDetails {
+    margin-bottom: 2rem;
+}
+
+.detailItem {
+    display: flex;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.detailLabel {
+    font-weight: 600;
+    min-width: 100px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.detailValue {
+    color: white;
+    flex: 1;
+}
+
+.productsSection {
+    margin-top: 2rem;
+}
+
+.productsSection h3 {
+    margin-bottom: 1rem;
+    color: white;
+}

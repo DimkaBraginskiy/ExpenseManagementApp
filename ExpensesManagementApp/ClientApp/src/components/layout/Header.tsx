@@ -26,7 +26,7 @@ export function Header(){
                 if(response.ok){
                     const data = await response.json();
                     const name = data.userName;
-                    console.log("Name: " + name);
+                    // console.log("Name: " + name);
                     
                     
                     if(name.length!=0){

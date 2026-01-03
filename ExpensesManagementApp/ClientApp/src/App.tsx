@@ -5,6 +5,7 @@ import {Dashboard} from "../src/pages/Dashboard/Dashboard.tsx";
 import {ProtectedRoute} from "../auth/ProtectedRoute.tsx";
 import {Layout} from "./components/layout/Layout.tsx";
 import {Me} from "./pages/Me/Me.tsx";
+import {DetailedExpense} from "./pages/DetailedExpense/DetailedExpense.tsx";
 
 
 function App() {
@@ -36,6 +37,14 @@ function App() {
                             <Me/>
                         </Layout>
                     }/>
+                
+                <Route path={"/expenses/:id"} element=
+                    {
+                        <Layout showHeader={true} showFooter={true}>
+                            <DetailedExpense/>
+                        </Layout>
+                    }
+                />
             </Routes>
         </BrowserRouter>
     )
