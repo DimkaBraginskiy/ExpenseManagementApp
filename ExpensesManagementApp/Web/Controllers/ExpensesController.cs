@@ -45,6 +45,22 @@ public class ExpensesController : ControllerBase
         }
     }
 
+    [HttpGet("id/{id}")]
+    [Authorize(Roles = "User")]
+    public async Task<ActionResult<ExpenseResponseDto>> GetExpenseByIdAsync(CancellationToken token, int id)
+    {
+        var result = await _expensesService.GetUserByIdAsync(token, id);
+
+        if (result.Equals(null))
+        {
+            throw new ArgumentException($"No Expense found with id {id}");
+        }
+
+        return Ok(result);
+    }
+    
+        
+
     [HttpGet("category/{categoryName}")]
     [Authorize(Roles = "User")]
     public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetExpensesByCategoryNameAsync(

@@ -44,6 +44,29 @@ public class ExpensesService : IExpensesService
         return expenseDtos;
     }
 
+    public async Task<ExpenseResponseDto> GetUserByIdAsync(CancellationToken token, int id)
+    {
+        if (id.Equals(0))
+        {
+            throw new ArgumentException("Id is invalid");
+        }
+
+        var expense = await _context.Expenses.Where(e => e.Id.Equals(id))
+            .Include(e => e.Category)
+            .Include(e => e.Currency)
+            .Include(e => e.Products)
+            .FirstOrDefaultAsync(token);
+
+        if (expense.Equals(null))
+        {
+            throw new ArgumentException("Expense not found");
+        }
+
+        var dto = await ExpenseMapper.toDto(token, expense);
+
+        return dto;
+    }
+
     public async Task<ExpenseMinimalResponseDto> CreateExpenseAsync(CancellationToken token, int userId, ExpenseRequestDto dto)
     {
         var category = await _context.Categories
