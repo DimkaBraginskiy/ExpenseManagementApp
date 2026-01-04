@@ -76,7 +76,7 @@ export function Register(){
             setIsLoading(false);
             return;
         }
-
+        
         try{
             const response = await fetch('/api/Auth/register', {
                 method: 'POST',

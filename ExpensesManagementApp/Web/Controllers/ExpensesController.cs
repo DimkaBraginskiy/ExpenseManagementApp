@@ -225,7 +225,7 @@ public class ExpensesController : ControllerBase
 
     [HttpPut("id/{id}")]
     [Authorize(Roles = "User")]
-    public async Task<IActionResult> UpdateExpenseAsync(CancellationToken token, int id, ExpenseRequestDto dto)
+    public async Task<ActionResult<ExpenseResponseDto>> UpdateExpenseAsync(CancellationToken token, int id, ExpenseRequestDto dto)
     {
         try
         {
@@ -235,7 +235,7 @@ public class ExpensesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest("Coudl not update Expense: " + ex.Message);
+            return BadRequest("Could not update Expense: " + ex.Message);
         }
     }
 }

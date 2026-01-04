@@ -5,6 +5,9 @@ using ExpensesManagementApp.DTOs.Request;
 using ExpensesManagementApp.DTOs.Response;
 using ExpensesManagementApp.Infrastructure.Mapper;
 using ExpensesManagementApp.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesManagementApp.Services;
@@ -12,10 +15,12 @@ namespace ExpensesManagementApp.Services;
 public class UsersService : IUsersService
 {
     private readonly AppDbContext _context;
+    private readonly UserManager<User> _userManager;
 
-    public UsersService(AppDbContext context)
+    public UsersService(AppDbContext context, UserManager<User> userManager)
     {
         _context = context;
+        _userManager = userManager;
     }
 
     public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync(CancellationToken token)
@@ -80,16 +85,80 @@ public class UsersService : IUsersService
     }
     
     
-    public async Task<bool> DeleteUserAsync(CancellationToken token, int id)
+    public async Task<bool> DeleteUserByIdAsync(CancellationToken token, int id)
     {
-        var expense = await _context.Expenses.FindAsync(new object?[] { id }, token);
-        if (expense == null)
+        var user = await _context.Users.FindAsync(new object?[] { id }, token);
+        if (user == null)
         {
             return false;
         }
 
-        _context.Expenses.Remove(expense);
+        _context.Users.Remove(user);
         await _context.SaveChangesAsync(token);
         return true;
+    }
+
+    public async Task<bool> DeleteUserByEmailAsync(CancellationToken token, string email)
+    {
+        var user = await _context.Users.FindAsync(new object?[] { email }, token);
+        if (user == null)
+        {
+            return false;
+        }
+
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync(token);
+        return true;
+    }
+
+    public async Task<UserDetailedResponseDto> UpdateUserByEmailAsync(CancellationToken token, string email,
+        RegisterUserDto dto)
+    { 
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower(), token);
+        if (user == null) 
+        { 
+            throw new ArgumentException($"User with email {email} not found.");
+        }
+        
+        if (dto.Email.ToLower() != email.ToLower()) 
+        { 
+            var emailExists = await _context.Users
+                .AnyAsync(u => u.Email.ToLower() == dto.Email.ToLower() && u.Id != user.Id, token);
+
+            if (emailExists)
+            {
+                throw new ArgumentException($"Email {dto.Email} already exists.");
+            }
+        }
+        
+        if (dto.UserName != user.UserName) 
+        {
+            var usernameExists = await _context.Users
+                .AnyAsync(u => u.UserName.ToLower() == dto.UserName.ToLower() && u.Id != user.Id, token);
+
+            if (usernameExists) 
+            { 
+                throw new ArgumentException($"Username '{dto.UserName}' is already taken.");
+            }
+        }
+        user.Email = dto.Email; 
+        user.UserName = dto.UserName;
+        user.NormalizedEmail = dto.Email.ToUpper();
+        user.NormalizedUserName = dto.UserName.ToUpper();
+
+        var updateResult = await _userManager.UpdateAsync(user);
+        if (!updateResult.Succeeded)
+        {
+            var errors = string.Join(", ", updateResult.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"Failed to update user: {errors}");
+        }
+            
+        return new UserDetailedResponseDto
+        {
+            UserName = user.UserName,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            AccountCreationDate = user.AccountCreationDate
+        };
     }
 }
