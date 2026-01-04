@@ -10,6 +10,8 @@ export function Me(){
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<Profile | null>(null);
     const navigate = useNavigate();
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState('');
 
     useEffect(() => {
         const loadProfile = async () => {
@@ -76,6 +78,55 @@ export function Me(){
         authService.clearTokens();
         navigate('/login');
     };
+    
+    const handleDeleteAccount = async () => {
+        const confirm1 = window.confirm("Are you sure you want to delete your account?");
+        if (!confirm1) return;
+
+        const confirm2 = window.confirm(
+            "This action CANNOT be undone.\nAll your data will be permanently deleted. Continue?"
+        );
+        if (!confirm2) return;
+
+        setDeleting(true);
+        setDeleteError('');
+
+        const token = authService.getAccessToken();
+        if (!token) {
+            setDeleteError("You are not authenticated.");
+            setDeleting(false);
+            return;
+        }
+        
+        if (!profile?.Email) {
+            setDeleteError("Could not determine your email address.");
+            setDeleting(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/Users/${profile.Email}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || "Failed to delete account");
+            }
+            
+            authService.clearTokens();
+            alert("Your account has been deleted.");
+            navigate('/login');
+        } catch (err: any) {
+            setDeleteError(err.message || "An error occurred while deleting your account");
+        } finally {
+            setDeleting(false);
+        }
+    };
 
     return (
         <div className={styles.container}>
@@ -138,6 +189,14 @@ export function Me(){
                                     onClick={handleLogout}
                                 >
                                     Logout
+                                </button>
+                                <button
+                                    className={styles.logoutButton}
+                                    onClick={handleDeleteAccount}
+                                    disabled={deleting}
+                                    style={{backgroundColor: deleting ? '#ccc' : '#dc3545'}}
+                                >
+                                    {deleting ? "Deleting..." : "Delete Account"}
                                 </button>
                             </div>
                         </div>

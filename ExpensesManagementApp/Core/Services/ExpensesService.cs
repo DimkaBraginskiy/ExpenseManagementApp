@@ -223,7 +223,9 @@ public class ExpensesService : IExpensesService
 
     public async Task<bool> DeleteExpenseAsync(CancellationToken token, int id)
     {
-        var expense = await _context.Expenses.Where(e => e.Id == id).FirstOrDefaultAsync(token);
+        var expense = await _context.Expenses.
+            Where(e => e.Id == id).
+            FirstOrDefaultAsync(token);
 
         if (expense == null)
         {

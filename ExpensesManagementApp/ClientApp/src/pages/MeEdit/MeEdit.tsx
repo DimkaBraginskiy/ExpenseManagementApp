@@ -206,7 +206,7 @@ export function MeEdit() {
                     <h2 className={styles.title}>Edit Profile</h2>
 
                     <button onClick={() => navigate(-1)} className={styles.backButton}>
-                        ← Back
+                        Back to profile
                     </button>
 
                     <div className={styles.profileCard}>

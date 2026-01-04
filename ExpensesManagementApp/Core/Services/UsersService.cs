@@ -87,7 +87,10 @@ public class UsersService : IUsersService
     
     public async Task<bool> DeleteUserByIdAsync(CancellationToken token, int id)
     {
-        var user = await _context.Users.FindAsync(new object?[] { id }, token);
+        var user = await _context.Users.
+            Where(u => u.Id == id).
+            FirstOrDefaultAsync(token);
+        
         if (user == null)
         {
             return false;
@@ -100,7 +103,10 @@ public class UsersService : IUsersService
 
     public async Task<bool> DeleteUserByEmailAsync(CancellationToken token, string email)
     {
-        var user = await _context.Users.FindAsync(new object?[] { email }, token);
+        var user = await _context.Users.
+            Where(u => u.Email.ToLower() == email.ToLower()).
+            FirstOrDefaultAsync(token);
+        
         if (user == null)
         {
             return false;
