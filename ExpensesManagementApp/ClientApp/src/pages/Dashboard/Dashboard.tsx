@@ -4,6 +4,7 @@ import {authService} from "../../../services/AuthService.tsx";
 import styles from "./Dashboard.module.css";
 import {ExpenseCard} from "./ExpenseCard.tsx";
 import type {Expense} from "./Expense.tsx";
+import {Link} from "react-router-dom";
 
 export function Dashboard(){
     const [error, setError] = useState('');
@@ -20,6 +21,7 @@ export function Dashboard(){
                 setToken('')
                 return;
             }
+            setToken(token);
             
             try{
                 const response = await fetch('api/Expenses', {
@@ -54,6 +56,12 @@ export function Dashboard(){
 
 
             <main className={styles.main}>
+                <button>
+                    <Link to={"/expenses/create"}>
+                        + New Expense
+                    </Link>
+                </button>
+
                 <h3> My Expenses</h3>
 
                 {/*<div>{authService.getAccessToken()*/}
@@ -65,12 +73,18 @@ export function Dashboard(){
                 {!loading && !error && expenses.length > 0 && (
                     <div className={styles.expensesGrid}>
                         {expenses.map((expense) => (
-                            <ExpenseCard key={expense.id} expense={expense} />
+                            <Link
+                                to={`/expenses/${expense.id}`}
+                                className={styles.expenseLink}
+                                key={expense.id}
+                            >
+                                <ExpenseCard expense={expense}/>
+                            </Link>
                         ))}
                     </div>
                 )}
 
-                    
+
             </main>
         </div>
     );

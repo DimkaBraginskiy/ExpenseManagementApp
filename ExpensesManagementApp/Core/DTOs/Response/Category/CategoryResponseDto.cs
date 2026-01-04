@@ -1,6 +1,7 @@
 ﻿namespace ExpensesManagementApp.DTOs.Response;
 
-public class IssuerResponseDto
+public class CategoryResponseDto
 {
+    public int Id { get; set; }
     public string? Name { get; set; }
 }

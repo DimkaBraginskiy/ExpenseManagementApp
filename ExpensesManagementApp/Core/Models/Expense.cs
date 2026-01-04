@@ -15,14 +15,12 @@ public class Expense
     [MaxLength(100)]
     public string Description { get; set; } = null!;
     
+    public decimal TotalAmount { get; set; }
+    
     //Registered User
     [ForeignKey("User")]
     public int? UserId { get; set; }
     public User? User { get; set; } = null!;
-    
-    //Anonymous user
-    public Guid? SessionId { get; set; }
-    
     
     [ForeignKey("Category")]
     public int? CategoryId { get; set; }
@@ -40,4 +38,4 @@ public class Expense
     public Currency Currency { get; set;} = null!;
 
     public IEnumerable<Product> Products { get; set; }= new List<Product>();
-} 
+}

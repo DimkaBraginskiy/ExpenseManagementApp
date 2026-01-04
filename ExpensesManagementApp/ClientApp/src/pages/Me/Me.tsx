@@ -2,12 +2,16 @@
 import {useEffect, useState} from "react";
 import {authService} from "../../../services/AuthService.tsx";
 import type {Profile} from "./Profile.tsx";
+import {useNavigate} from "react-router-dom";
 
 export function Me(){
     const [error, setError] = useState('');
     const [token, setToken] = useState('');
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<Profile | null>(null);
+    const navigate = useNavigate();
+    const [deleting, setDeleting] = useState(false);
+    const [deleteError, setDeleteError] = useState('');
 
     useEffect(() => {
         const loadProfile = async () => {
@@ -35,7 +39,7 @@ export function Me(){
                 const data = await response.json();
                 
                 console.log("Parsed json: " + data);
-                console.log("userName:", data.userName);  // Should be "test@gmail.com"
+                console.log("userName:", data.userName);
                 console.log("email:", data.email);
                 console.log("phoneNumber:", data.phoneNumber);
                 
@@ -66,6 +70,64 @@ export function Me(){
         });
     };
 
+    const handleLogout = async () => {
+        if (!confirm("Are you sure you want to log out?")) {
+            return;
+        }
+
+        authService.clearTokens();
+        navigate('/login');
+    };
+    
+    const handleDeleteAccount = async () => {
+        const confirm1 = window.confirm("Are you sure you want to delete your account?");
+        if (!confirm1) return;
+
+        const confirm2 = window.confirm(
+            "This action CANNOT be undone.\nAll your data will be permanently deleted. Continue?"
+        );
+        if (!confirm2) return;
+
+        setDeleting(true);
+        setDeleteError('');
+
+        const token = authService.getAccessToken();
+        if (!token) {
+            setDeleteError("You are not authenticated.");
+            setDeleting(false);
+            return;
+        }
+        
+        if (!profile?.Email) {
+            setDeleteError("Could not determine your email address.");
+            setDeleting(false);
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/Users/${profile.Email}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || "Failed to delete account");
+            }
+            
+            authService.clearTokens();
+            alert("Your account has been deleted.");
+            navigate('/login');
+        } catch (err: any) {
+            setDeleteError(err.message || "An error occurred while deleting your account");
+        } finally {
+            setDeleting(false);
+        }
+    };
+
     return (
         <div className={styles.container}>
             <main className={styles.main}>
@@ -91,6 +153,11 @@ export function Me(){
 
                             <div className={styles.profileDetails}>
                                 <div className={styles.detailRow}>
+                                    <span className={styles.label}>Username:</span>
+                                    <span className={styles.value}>{profile.UserName || 'No Username'}</span>
+                                </div>
+                                
+                                <div className={styles.detailRow}>
                                     <span className={styles.label}>Email:</span>
                                     <span className={styles.value}>{profile.Email || 'No email'}</span>
                                 </div>
@@ -111,9 +178,25 @@ export function Me(){
                             </div>
 
                             <div className={styles.actions}>
-                                <button className={styles.editButton}>Edit Profile</button>
-                                <button className={styles.logoutButton}>
+                                <button
+                                    className={styles.editButton}
+                                    onClick={() => navigate('/me/edit')}
+                                >
+                                    Edit Profile
+                                </button>
+                                <button
+                                    className={styles.logoutButton}
+                                    onClick={handleLogout}
+                                >
                                     Logout
+                                </button>
+                                <button
+                                    className={styles.logoutButton}
+                                    onClick={handleDeleteAccount}
+                                    disabled={deleting}
+                                    style={{backgroundColor: deleting ? '#ccc' : '#dc3545'}}
+                                >
+                                    {deleting ? "Deleting..." : "Delete Account"}
                                 </button>
                             </div>
                         </div>

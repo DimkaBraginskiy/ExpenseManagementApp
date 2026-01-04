@@ -7,10 +7,12 @@ interface ExpenseCardProps {
 }
 
 export function ExpenseCard({ expense }: ExpenseCardProps) {
+    const previewDescription = expense.description.length > 10 ? expense.description.substring(0,15) + "..." : expense.description; 
+    
     return (
         <div className={styles.expenseCard}>
             <div className={styles.expenseHeader}>
-                <h3 className={styles.expenseDescription}>{expense.description}</h3>
+                <h3 className={styles.expenseDescription}>{previewDescription}</h3>
                 <span className={styles.expenseAmount}>
                     {expense.totalAmount.toFixed(2)}
                     {/* Add currency display if needed */}

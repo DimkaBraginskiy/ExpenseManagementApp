@@ -1,11 +1,13 @@
 ﻿import styles from "./Layout.module.css";
 import React, {useEffect, useState} from "react";
-import {Link} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {authService} from "../../../services/AuthService.tsx";
+import {Me} from "../../pages/Me/Me.tsx";
 
 
 export function Header(){
     const[userInitial, setUserInitial] = useState('U');
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadUserInfo = async () => {
@@ -26,7 +28,7 @@ export function Header(){
                 if(response.ok){
                     const data = await response.json();
                     const name = data.userName;
-                    console.log("Name: " + name);
+                    // console.log("Name: " + name);
                     
                     
                     if(name.length!=0){
@@ -41,6 +43,15 @@ export function Header(){
         
         loadUserInfo();
     }, []);
+
+    const handleLogout = () => {
+        if (!confirm("Are you sure you want to log out?")) {
+            return;
+        }
+
+        authService.clearTokens();
+        navigate('/login');  
+    };
     
     
     
@@ -50,13 +61,25 @@ export function Header(){
                 <Link to="/" className={styles.logo}>
                     Expense Manager
                 </Link>
-                
+
                 <div className={styles.headerRight}>
-                    <Link to="/me" className={styles.avatarLink}>
+                    <div className={styles.avatarDropdown}>
                         <div className={styles.avatar}>
                             {userInitial}
                         </div>
-                    </Link>
+
+                        <div className={styles.dropdownMenu}>
+                            <Link to="/me" className={styles.dropdownItem}>
+                                My Profile
+                            </Link>
+                            <Link to="/me/edit" className={styles.dropdownItem}>
+                                Edit Profile
+                            </Link>
+                            <button onClick={handleLogout} className={styles.dropdownItem}>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>

@@ -67,6 +67,9 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IExpensesService, ExpensesService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IIssuerService, IssuerService>();
+builder.Services.AddScoped<ICurrencyService, CurrencyService>();
 
 
 

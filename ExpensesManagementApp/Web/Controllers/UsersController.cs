@@ -1,9 +1,11 @@
 ﻿using System.Security.Claims;
+using ExpensesManagementApp.Core.Models;
 using ExpensesManagementApp.Services;
 using Microsoft.AspNetCore.Mvc;
 using ExpensesManagementApp.DTOs.Request;
 using ExpensesManagementApp.DTOs.Response;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 
 namespace ExpensesManagementApp.Controllers;
@@ -77,11 +79,11 @@ public class UsersController : ControllerBase
 
     [HttpDelete]
     [Authorize(Roles = "Admin,User")]
-    public async Task<ActionResult> DeleteUserAsync(CancellationToken token, int id)
+    public async Task<ActionResult> DeleteUserByIdAsync(CancellationToken token, int id)
     {
         try
         {
-            var res = _usersService.DeleteUserAsync(token, id);
+            var res = _usersService.DeleteUserByIdAsync(token, id);
             if (res.Result)
             {
                 return Ok($"User with id {id} deleted successfully");
@@ -91,6 +93,41 @@ public class UsersController : ControllerBase
         }catch(Exception ex)
         {
             return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpDelete("{email}")]
+    [Authorize(Roles = "Admin,User")]
+    public async Task<ActionResult> DeleteUserByEmailAsync(CancellationToken token, string email)
+    {
+        try
+        {
+            var res = _usersService.DeleteUserByEmailAsync(token, email);
+            if (res.Result)
+            {
+                return Ok($"User with email {email} deleted successfully");
+            }
+
+            return BadRequest("Could not delete user");
+        }catch(Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpPut("{email}")]
+    [Authorize(Roles = "Admin,User")]
+    public async Task<ActionResult<UserDetailedResponseDto>> UpdateUserByEmailAsync(CancellationToken token, string email, RegisterUserDto dto)
+    {
+        try
+        {
+            var res = await _usersService.UpdateUserByEmailAsync(token, email, dto);
+            
+            return Ok(res);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Could not update User: " + ex.Message);
         }
     }
 }

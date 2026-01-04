@@ -33,36 +33,61 @@ public class ExpensesService : IExpensesService
         }
 
         var expenseDtos = new List<ExpenseResponseDto>();
-        
+
         foreach (var expense in expenses)
         {
             var dto = await ExpenseMapper.toDto(token, expense);
-            
+
             expenseDtos.Add(dto);
         }
 
         return expenseDtos;
     }
 
-    public async Task<ExpenseMinimalResponseDto> CreateExpenseAsync(CancellationToken token, int userId, ExpenseRequestDto dto)
+    public async Task<ExpenseResponseDto> GetUserByIdAsync(CancellationToken token, int id)
+    {
+        if (id.Equals(0))
+        {
+            throw new ArgumentException("Id is invalid");
+        }
+
+        var expense = await _context.Expenses.Where(e => e.Id.Equals(id))
+            .Include(e => e.Category)
+            .Include(e => e.Currency)
+            .Include(e => e.Products)
+            .FirstOrDefaultAsync(token);
+
+        if (expense.Equals(null))
+        {
+            throw new ArgumentException("Expense not found");
+        }
+
+        var dto = await ExpenseMapper.toDto(token, expense);
+
+        return dto;
+    }
+
+    public async Task<ExpenseMinimalResponseDto> CreateExpenseAsync(CancellationToken token, int userId,
+        ExpenseRequestDto dto)
     {
         var category = await _context.Categories
             .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Category.Name.ToLower().Trim(), token);
         if (category == null)
             throw new InvalidOperationException("Category does not exist");
-        
+
         var currency = await _context.Currencies
             .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Currency.Name.ToLower().Trim(), token);
-        
+
         if (currency == null)
             throw new InvalidOperationException("Currency does not exist");
 
         if (dto.Products == null && !dto.Products.Any())
         {
             throw new InvalidOperationException("Products list is empty.");
-        } 
-        var productDtos = dto.Products.ToList();   
-        
+        }
+
+        var productDtos = dto.Products.ToList();
+
 
         var expense = new Expense()
         {
@@ -74,7 +99,7 @@ public class ExpensesService : IExpensesService
         };
 
         var products = new List<Product>();
-        foreach(var productDto in productDtos)
+        foreach (var productDto in productDtos)
         {
             var product = new Product()
             {
@@ -86,7 +111,7 @@ public class ExpensesService : IExpensesService
             };
             products.Add(product);
         }
-        
+
         expense.Products = products;
 
         await _context.Expenses.AddAsync(expense, token);
@@ -104,7 +129,8 @@ public class ExpensesService : IExpensesService
         };
     }
 
-    public async Task<IEnumerable<ExpenseResponseDto>> GetExpensesByCategoryNameAndUserIdAsync(CancellationToken token, string categoryName, int userId)
+    public async Task<IEnumerable<ExpenseResponseDto>> GetExpensesByCategoryNameAndUserIdAsync(CancellationToken token,
+        string categoryName, int userId)
     {
         if (!await _context.Categories.AnyAsync(c => c.Name.ToLower().Equals(categoryName.ToLower()), token))
         {
@@ -125,11 +151,11 @@ public class ExpensesService : IExpensesService
         }
 
         var expenseDtos = new List<ExpenseResponseDto>();
-        
+
         foreach (var expense in expenses)
         {
             var dto = ExpenseMapper.toDto(token, expense);
-            
+
             expenseDtos.Add(dto.Result);
         }
 
@@ -158,36 +184,37 @@ public class ExpensesService : IExpensesService
                 .Include(e => e.Currency)
                 .Include(e => e.Issuer)
                 .ToListAsync(token);
-        
+
         var expenseDtos = new List<ExpenseResponseDto>();
-        
+
         foreach (var expense in expenses)
         {
             var dto = ExpenseMapper.toDto(token, expense);
-            
+
             expenseDtos.Add(dto.Result);
         }
 
         return expenseDtos;
     }
 
-    public async Task<IEnumerable<ExpenseResponseDto>> GetExpensesByIssuerAsync(CancellationToken token, string issuerName)
+    public async Task<IEnumerable<ExpenseResponseDto>> GetExpensesByIssuerAsync(CancellationToken token,
+        string issuerName)
     {
         var expenses =
             await _context.Expenses.Where(e => e.Issuer.Name == issuerName)
-                    .ToListAsync(token);
+                .ToListAsync(token);
 
         if (!expenses.Any())
         {
             throw new ArgumentException($"Could not found any expenses related to issuer name: {issuerName} ");
         }
-        
+
         var expenseDtos = new List<ExpenseResponseDto>();
-        
+
         foreach (var expense in expenses)
         {
             var dto = ExpenseMapper.toDto(token, expense);
-            
+
             expenseDtos.Add(dto.Result);
         }
 
@@ -196,7 +223,9 @@ public class ExpensesService : IExpensesService
 
     public async Task<bool> DeleteExpenseAsync(CancellationToken token, int id)
     {
-        var expense = await _context.Expenses.Where(e => e.Id == id).FirstOrDefaultAsync(token);
+        var expense = await _context.Expenses.
+            Where(e => e.Id == id).
+            FirstOrDefaultAsync(token);
 
         if (expense == null)
         {
@@ -206,5 +235,84 @@ public class ExpensesService : IExpensesService
         _context.Expenses.Remove(expense);
         await _context.SaveChangesAsync(token);
         return true;
+    }
+
+    public async Task<ExpenseResponseDto> UpdateExpenseAsync(CancellationToken token, int id, ExpenseRequestDto dto)
+    {
+        var expense = await _context.Expenses
+            .Include(e => e.Category)
+            .Include(e => e.Issuer)
+            .Include(e => e.Currency)
+            .Include(e => e.Products)
+            .FirstOrDefaultAsync(e => e.Id == id, token);
+
+        if (expense == null)
+        {
+            throw new ArgumentException($"Expense with id {id} does not exist");
+        }
+
+        // Update simple fields
+        expense.Date = dto.Date.ToUniversalTime();
+        expense.Description = dto.Description.Trim();
+
+        // Update Category
+        if (dto.Category?.Name != null)
+        {
+            var category = await _context.Categories
+                .FirstOrDefaultAsync(c => c.Name == dto.Category.Name.Trim(), token);
+
+            if (category == null)
+                throw new ArgumentException($"Category '{dto.Category.Name}' does not exist");
+
+            expense.CategoryId = category.Id;
+        }
+
+        // Update Issuer (optional)
+        if (dto.Issuer?.Name != null)
+        {
+            var issuer = await _context.Issuers
+                .FirstOrDefaultAsync(i => i.Name == dto.Issuer.Name.Trim(), token);
+
+            if (issuer == null)
+                throw new ArgumentException($"Issuer '{dto.Issuer.Name}' does not exist");
+
+            expense.IssuerId = issuer.Id;
+        }
+
+        // Update Currency (required)
+        var currency = await _context.Currencies
+            .FirstOrDefaultAsync(c => c.Name == dto.Currency.Name.Trim(), token);
+
+        if (currency == null)
+            throw new ArgumentException($"Currency '{dto.Currency.Name}' does not exist");
+
+        expense.CurrencyId = currency.Id;
+
+        // Update Products - full replace
+        if (dto.Products != null)
+        {
+            // Remove old products
+            _context.Products.RemoveRange(expense.Products);
+
+            // Add new ones
+            var newProducts = dto.Products.Select(p => new Product
+            {
+                ExpenseId = expense.Id,
+                Name = p.Name.Trim(),
+                Price = p.Price,
+                Quantity = p.Quantity
+            }).ToList();
+
+            await _context.Products.AddRangeAsync(newProducts, token);
+            expense.Products = newProducts;
+        }
+
+        // Recalculate total
+        expense.TotalAmount = expense.Products.Sum(p => p.Price * p.Quantity);
+
+        await _context.SaveChangesAsync(token);
+
+        // Map and return
+        return await  ExpenseMapper.toDto(token, expense);
     }
 }
