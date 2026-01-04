@@ -37,11 +37,17 @@ public class AuthService : IAuthService
         {
             throw new InvalidOperationException("Email already exists in the system!");
         }
+
+        if (await _context.Users.AnyAsync(u => u.UserName == dto.UserName, cancellationToken))
+        {
+            throw new InvalidOperationException("Username already exists in the system!");
+        }
+
         //3. Save to db
         var user = new User()
         {
             Email = dto.Email,
-            UserName = dto.Email
+            UserName = dto.UserName
         };
         
         var result = await _userManager.CreateAsync(user, dto.Password);
