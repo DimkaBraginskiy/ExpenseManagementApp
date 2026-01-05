@@ -23,17 +23,19 @@ public class UsersService : IUsersService
         _userManager = userManager;
     }
 
-    public async Task<IEnumerable<UserResponseDto>> GetAllUsersAsync(CancellationToken token)
+    public async Task<IEnumerable<UserDetailedResponseDto>> GetAllUsersAsync(CancellationToken token)
     {
         var users = await _context.Users.ToListAsync(token);
 
-        List<UserResponseDto> response = new List<UserResponseDto>();
+        List<UserDetailedResponseDto> response = new List<UserDetailedResponseDto>();
 
         foreach (var user in users)
         {
-            UserResponseDto dto = new UserResponseDto()
+            var dto = new UserDetailedResponseDto()
             {
                 Email = user.Email,
+                UserName = user.UserName,
+                PhoneNumber = user.PhoneNumber,
                 AccountCreationDate = user.AccountCreationDate
             };
             response.Add(dto);

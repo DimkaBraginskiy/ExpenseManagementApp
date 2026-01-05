@@ -4,16 +4,23 @@ import {authService} from "../../../services/AuthService.tsx";
 import styles from "./Dashboard.module.css";
 import {ExpenseCard} from "./ExpenseCard.tsx";
 import type {Expense} from "./Expense.tsx";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import type {User} from "./User.tsx";
+import { getUserRole } from "../../utils/jwt/jwtUtils.tsx";
+import {UserCard} from "./UserCard.tsx";
 
 export function Dashboard(){
     const [error, setError] = useState('');
     const [token, setToken] = useState('');
     const [loading, setLoading] = useState(true);
     const [expenses, setExpenses] = useState<Expense[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
+    
+    const role = getUserRole();
+    const navigate = useNavigate();
     
     useEffect(() => {
-        const loadExpenses = async () => {
+        const loadData = async () => {
             const token = authService.getAccessToken();
             if(token == null){
                 setError('Token not found!');
@@ -24,23 +31,47 @@ export function Dashboard(){
             setToken(token);
             
             try{
-                const response = await fetch('api/Expenses', {
-                    method: 'GET',
-                    headers:{
-                        'Authorization': `Bearer ${token}`,
-                        'Content-type': 'application/json'
+                if(role === "Admin"){
+                    const response = await fetch('api/Users', {
+                      method: 'GET',
+                      headers:{
+                          'Authorization': `Bearer ${token}`, 
+                          'Content-type': 'application/json'
+                        }    
+                    });
+                    
+                    if(!response.ok){
+                        throw new Error("No users found!");
                     }
-                });
-                
-                if(!response.ok){
-                    throw new Error('No expenses found');
-                }
+                    
+                    const data : any = await response.json();
+                    setUsers(data);
+                    
+                    console.log(`Admin role: ${role}`);
+                    
+                }else{
+                    const response = await fetch('api/Expenses', {
+                        method: 'GET',
+                        headers:{
+                            'Authorization': `Bearer ${token}`,
+                            'Content-type': 'application/json'
+                        }
+                    });
 
-                const data : any = await response.json();
+                    if(!response.ok){
+                        throw new Error('No expenses found');
+                    }
+
+                    const data : any = await response.json();
+                    setExpenses(data);
+
+                    console.log(`User role: ${role}`);
+                }
+                
+                
                 // console.log("API Response:", data);
                 // console.log("First expense:", data[0]);
                 
-                setExpenses(data);
             }catch(err: any){
                 setError('Error: ' + err.message);
             }finally {
@@ -48,43 +79,53 @@ export function Dashboard(){
             }
         };
         
-        loadExpenses();
-    }, [])
+        loadData();
+    }, [role])
 
     return (
         <div className={styles.container}>
 
 
             <main className={styles.main}>
-                <button>
-                    <Link to={"/expenses/create"}>
-                        + New Expense
-                    </Link>
-                </button>
+                {role === "Admin" ? (
+                    <>
+                        <h3>All Users</h3>
 
-                <h3> My Expenses</h3>
+                        {users.length === 0 ? (
+                            <p>No users found.</p>
+                        ) : (
+                            <div className={styles.expensesGrid}>
+                                {users.map((user) => (
+                                    <UserCard key={user.email} user={user} />
+                                ))}
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <>
+                        <button>
+                            <Link to="/expenses/create">+ New Expense</Link>
+                        </button>
 
-                {/*<div>{authService.getAccessToken()*/}
-                {/*    ? 'Logged in successfully! \naccess token: ' + authService.getAccessToken() + '\nrefresh token: ' + authService.getRefreshToken()*/}
-                {/*    : 'No token'}*/}
-                {/*</div>*/}
+                        <h3>My Expenses</h3>
 
-
-                {!loading && !error && expenses.length > 0 && (
-                    <div className={styles.expensesGrid}>
-                        {expenses.map((expense) => (
-                            <Link
-                                to={`/expenses/${expense.id}`}
-                                className={styles.expenseLink}
-                                key={expense.id}
-                            >
-                                <ExpenseCard expense={expense}/>
-                            </Link>
-                        ))}
-                    </div>
+                        {expenses.length === 0 ? (
+                            <p>No expenses yet.</p>
+                        ) : (
+                            <div className={styles.expensesGrid}>
+                                {expenses.map((expense) => (
+                                    <Link
+                                        to={`/expenses/${expense.id}`}
+                                        className={styles.expenseLink}
+                                        key={expense.id}
+                                    >
+                                        <ExpenseCard expense={expense} />
+                                    </Link>
+                                ))}
+                            </div>
+                        )}
+                    </>
                 )}
-
-
             </main>
         </div>
     );

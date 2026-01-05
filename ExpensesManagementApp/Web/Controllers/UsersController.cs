@@ -39,7 +39,7 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetUsersAsync(CancellationToken token)
+    public async Task<ActionResult<UserDetailedResponseDto>> GetUsersAsync(CancellationToken token)
     {
         try
         {
