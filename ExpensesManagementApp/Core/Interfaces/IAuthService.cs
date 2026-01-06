@@ -10,4 +10,5 @@ public interface IAuthService
     public Task<IActionResult> RegisterUserAsync(RegisterUserDto dto, CancellationToken cancellationToken);
 
     public Task<UserLoginResponseDto> LoginUserAsync(LoginUserDto dto, CancellationToken cancellationToken);
+    Task<UserLoginResponseDto> CreateGuestSessionAsync();
 }

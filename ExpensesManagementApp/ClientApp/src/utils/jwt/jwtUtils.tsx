@@ -44,3 +44,7 @@ export function isAdmin(): boolean{
 export function isUser(): boolean{
     return getUserRole() === "User";
 }
+
+export function isGuest(): boolean{
+    return getUserRole() === "Guest";
+}

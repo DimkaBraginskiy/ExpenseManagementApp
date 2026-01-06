@@ -21,21 +21,14 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpGet("")]
-    [Authorize(Roles = "User")]
+    [Authorize]
     public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetAllExpensesByUserIdAsync(CancellationToken token)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-
-        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
-        {
-            return Unauthorized(new { Error = "Invalid user" });    
-        }
-
+        var (userId, guestSessionId, _) = GetOwnerInfo();
         
         try
         {
-            var expenses = await _expensesService.GetAllExpensesByUserIdAsync(token, userId);
+            var expenses = await _expensesService.GetAllExpensesByUserIdAsync(token, userId, guestSessionId);
 
             return Ok(expenses);
         }
@@ -46,10 +39,12 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpGet("id/{id}")]
-    [Authorize(Roles = "User")]
+    [Authorize]
     public async Task<ActionResult<ExpenseResponseDto>> GetExpenseByIdAsync(CancellationToken token, int id)
     {
-        var result = await _expensesService.GetUserByIdAsync(token, id);
+        var (userId, guestSessionId, _) = GetOwnerInfo();
+        
+        var result = await _expensesService.GetExpenseByIdAsync(token, id, userId, guestSessionId);
 
         if (result.Equals(null))
         {
@@ -173,17 +168,39 @@ public class ExpensesController : ControllerBase
 
 
     [HttpPost]
-    [Authorize(Roles = "User")]
+    [Authorize]
     public async Task<IActionResult> CreateExpenseAsync(CancellationToken token, [FromBody] ExpenseRequestDto dto)
     {
-        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        Console.WriteLine($"userIdClaim: {userIdClaim}");
-        if (int.TryParse(userIdClaim, out int userId) == false)
-            return Unauthorized(new { Error = "Invalid user" });
+        var subClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value 
+                       ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(subClaim))
+            return Unauthorized(new { Error = "Missing subject claim" });
+
+        var role = User.FindFirst(ClaimTypes.Role)?.Value;
         
         try
         {
-            var expense = await _expensesService.CreateExpenseAsync(token, userId, dto);
+            int? userId = null;
+            Guid? guestSessionId = null;
+            
+            if (role == "Guest")
+            {
+                if (!Guid.TryParse(subClaim, out var guid))
+                    return Unauthorized(new { Error = "Invalid guest session ID" });
+
+                guestSessionId = guid;
+            }
+            else
+            {
+                if (!int.TryParse(subClaim, out var id))
+                    return Unauthorized(new { Error = "Invalid user ID" });
+
+                userId = id;
+            }
+            
+            var expense = await _expensesService.CreateExpenseAsync(
+                token, userId, guestSessionId, dto);
             
             return Ok(new { Id = expense.Id, Message = "Expense created successfully" });
         }
@@ -203,19 +220,21 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpDelete("id/{id}")]
-    [Authorize(Roles = "User")]
+    [Authorize]
     public async Task<IActionResult> DeleteExpenseAsync(CancellationToken token, int id)
     {
+        var (userId, guestSessionId, _) = GetOwnerInfo();
+        
         try
         {
-            var result = await _expensesService.DeleteExpenseAsync(token, id);
+            var result = await _expensesService.DeleteExpenseAsync(token, id, userId, guestSessionId);
 
             if (result)
             {
                 return Ok($"Expense with id {id} deleted successfully");
             }
 
-            return BadRequest($"Could not delete expense with id {id}");
+            return NotFound(new { Error = "Expense not found or access denied" });
         }
         catch (Exception ex)
         {
@@ -224,12 +243,14 @@ public class ExpensesController : ControllerBase
     }
 
     [HttpPut("id/{id}")]
-    [Authorize(Roles = "User")]
+    [Authorize]
     public async Task<ActionResult<ExpenseResponseDto>> UpdateExpenseAsync(CancellationToken token, int id, ExpenseRequestDto dto)
     {
+        var (userId, guestSessionId, _) = GetOwnerInfo();
+        
         try
         {
-            var res = await _expensesService.UpdateExpenseAsync(token, id, dto);
+            var res = await _expensesService.UpdateExpenseAsync(token, id, dto, userId, guestSessionId);
             
             return Ok(res);
         }
@@ -237,5 +258,35 @@ public class ExpensesController : ControllerBase
         {
             return BadRequest("Could not update Expense: " + ex.Message);
         }
+    }
+    
+    
+    private (int? userId, Guid? guestSessionId, string role) GetOwnerInfo()
+    {
+        var subClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value 
+                       ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (string.IsNullOrEmpty(subClaim))
+            throw new UnauthorizedAccessException("Missing subject claim");
+
+        var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "User";
+
+        int? userId = null;
+        Guid? guestSessionId = null;
+
+        if (role == "Guest")
+        {
+            if (!Guid.TryParse(subClaim, out var guid))
+                throw new UnauthorizedAccessException("Invalid guest session ID");
+            guestSessionId = guid;
+        }
+        else
+        {
+            if (!int.TryParse(subClaim, out var id))
+                throw new UnauthorizedAccessException("Invalid user ID");
+            userId = id;
+        }
+
+        return (userId, guestSessionId, role);
     }
 }

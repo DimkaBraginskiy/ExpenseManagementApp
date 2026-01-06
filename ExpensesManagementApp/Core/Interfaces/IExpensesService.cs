@@ -6,8 +6,16 @@ namespace ExpensesManagementApp.Services;
 
 public interface IExpensesService
 {
-    public Task<List<ExpenseResponseDto>> GetAllExpensesByUserIdAsync(CancellationToken token, int id);
-    public Task<ExpenseMinimalResponseDto> CreateExpenseAsync(CancellationToken token, int userId, ExpenseRequestDto dto);
+    
+    public Task<List<ExpenseResponseDto>> GetAllExpensesByUserIdAsync(
+        CancellationToken token,
+        int? userId,
+        Guid? guestSessionId);
+    public Task<ExpenseMinimalResponseDto> CreateExpenseAsync(
+        CancellationToken token, 
+        int? userId, 
+        Guid? guestSessionId, 
+        ExpenseRequestDto dto);
 
     public Task<IEnumerable<ExpenseResponseDto>> GetExpensesByCategoryNameAndUserIdAsync(CancellationToken token,
         string categoryName, int userId);
@@ -17,7 +25,22 @@ public interface IExpensesService
 
     public Task<IEnumerable<ExpenseResponseDto>> GetExpensesByIssuerAsync(CancellationToken token, string issuerName);
 
-    public Task<bool> DeleteExpenseAsync(CancellationToken token, int id);
-    public Task<ExpenseResponseDto> GetUserByIdAsync(CancellationToken token, int id);
-    public Task<ExpenseResponseDto> UpdateExpenseAsync(CancellationToken token, int id, ExpenseRequestDto dto);
+    public Task<bool> DeleteExpenseAsync(
+        CancellationToken token,
+        int id,
+        int? userId,
+        Guid? guestSessionId);
+
+    public Task<ExpenseResponseDto?> GetExpenseByIdAsync(
+        CancellationToken token,
+        int id,
+        int? userId,
+        Guid? guestSessionId);
+
+    public Task<ExpenseResponseDto> UpdateExpenseAsync(
+        CancellationToken token,
+        int id,
+        ExpenseRequestDto dto,
+        int? userId,
+        Guid? guestSessionId);
 }

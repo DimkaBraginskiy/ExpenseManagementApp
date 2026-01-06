@@ -11,46 +11,88 @@ export function CreateExpense() {
         categoryId: "",
         issuerId: "",
         currencyId: "",
-        products: [
-            {
-                name: "",
-                price: 0,
-                quantity: 1
-            }
-        ]
+        products: [{ name: "", price: 0, quantity: 1 }]
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [categories, setCategories] = useState([]);
-    const [currencies, setCurrencies] = useState([]);
-    const [issuers, setIssuers] = useState([]);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [currencies, setCurrencies] = useState<any[]>([]);
+    const [issuers, setIssuers] = useState<any[]>([]);
     const [loadingOptions, setLoadingOptions] = useState(true);
 
     useEffect(() => {
-        const fetchOptions = async () => {
-            try{
+        const ensureGuestTokenAndLoadData = async () => {
+            let token = authService.getAccessToken();
+
+            console.log("[CreateExpense] Current token on mount:", token ? `${token.substring(0, 20)}...` : "null");
+
+            if (!token) {
+                console.log("[CreateExpense] No token found → creating guest session...");
+                const newToken = await authService.createGuestSession();
+                if (newToken) {
+                    console.log("[CreateExpense] Guest session created successfully:", `${newToken.substring(0, 20)}...`);
+                    token = newToken;
+                } else {
+                    console.error("[CreateExpense] Failed to create guest session");
+                    setErrors(prev => ({ ...prev, submit: "Could not start guest session. Try again." }));
+                    return;
+                }
+            } else {
+                console.log("[CreateExpense] Token already exists → proceeding");
+            }
+
+            // Now fetch options WITH the token
+            await fetchOptions(token);
+        };
+
+        const fetchOptions = async (token: string) => {
+            try {
                 setLoadingOptions(true);
-                
+                console.log("[CreateExpense] Fetching categories/currencies/issuers with token...");
+
+                const authHeaders = {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                };
+
                 const [categoryRes, currencyRes, issuerRes] = await Promise.all([
-                    fetch("/api/category"),
-                    fetch("/api/Currency"),
-                    fetch("/api/Issuer")
+                    fetch("/api/category", { headers: authHeaders }),
+                    fetch("/api/Currency", { headers: authHeaders }),
+                    fetch("/api/Issuer", { headers: authHeaders })
                 ]);
 
+                // Log responses for debugging
+                console.log("Category response:", categoryRes.status, categoryRes.ok);
+                console.log("Currency response:", currencyRes.status);
+                console.log("Issuer response:", issuerRes.status);
+
+                if (!categoryRes.ok || !currencyRes.ok || !issuerRes.ok) {
+                    const texts = await Promise.all([
+                        categoryRes.text(),
+                        currencyRes.text(),
+                        issuerRes.text()
+                    ]);
+                    console.error("Failed responses:", texts);
+                    throw new Error("Failed to load required data (401/403?)");
+                }
+
                 const cats = await categoryRes.json();
-                const iss = await issuerRes.json();
                 const curs = await currencyRes.json();
-                
+                const iss = await issuerRes.json();
+
+                console.log("Loaded options:", { cats: cats.length, curs: curs.length, iss: iss.length });
+
                 setCategories(cats);
-                setIssuers(iss);
                 setCurrencies(curs);
-            }catch(error : any){
-                console.log("Failed to load options: " + error.message)
-            }finally {
+                setIssuers(iss);
+            } catch (error: any) {
+                console.error("Failed to load options:", error);
+                setErrors(prev => ({ ...prev, submit: "Failed to load categories/currencies. Check console." }));
+            } finally {
                 setLoadingOptions(false);
             }
         };
-        
-        fetchOptions();
+
+        ensureGuestTokenAndLoadData();
     }, []);
     
     
@@ -123,11 +165,16 @@ export function CreateExpense() {
         const validationErrors = validateExpense();
         setErrors(validationErrors);
 
-        if (Object.keys(validationErrors).length > 0)
-            return;
+        if (Object.keys(validationErrors).length > 0) return;
 
-        const token = await authService.getAccessToken();
-        
+        const token = authService.getAccessToken();
+        console.log("[CreateExpense] Submitting expense with token:", token ? `${token.substring(0, 20)}...` : "MISSING!");
+
+        if (!token) {
+            setErrors(prev => ({ ...prev, submit: "No authentication token. Try refreshing." }));
+            return;
+        }
+
         try {
             const response = await fetch("/api/expenses", {
                 method: "POST",
@@ -149,11 +196,19 @@ export function CreateExpense() {
                 })
             });
 
-            if (!response.ok) throw new Error("Failed");
+            console.log("[CreateExpense] Submit response status:", response.status);
 
-            navigate(-1); // go back on success
-        } catch (err) {
-            setErrors(prev => ({ ...prev, submit: "Failed to create expense" }));
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Submit failed:", response.status, errorText);
+                throw new Error(`Server error: ${response.status}`);
+            }
+
+            console.log("Expense created successfully!");
+            navigate(-1);
+        } catch (err: any) {
+            console.error("Submit error:", err);
+            setErrors(prev => ({ ...prev, submit: "Failed to create expense. Check console." }));
         }
     };
     

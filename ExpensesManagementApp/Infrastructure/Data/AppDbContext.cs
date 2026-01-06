@@ -18,5 +18,21 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
     
-    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        
+        //checking mutual exclusiveness of Ids.
+        modelBuilder.Entity<Expense>()
+            .HasCheckConstraint(
+                "CK_Expense_Owner_Exclusive",
+                "(\"UserId\" IS NOT NULL AND \"GuestSessionId\" IS NULL) " +
+                "OR" +
+                " (\"UserId\" IS NULL AND \"GuestSessionId\" IS NOT NULL)"
+            );
+
+        
+        modelBuilder.Entity<Expense>()
+            .HasIndex(e => e.GuestSessionId);
+    }
 }

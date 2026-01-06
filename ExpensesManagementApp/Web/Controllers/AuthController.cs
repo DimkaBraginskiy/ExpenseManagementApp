@@ -1,9 +1,14 @@
-﻿using ExpensesManagementApp.Data;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using ExpensesManagementApp.Data;
 using ExpensesManagementApp.DTOs.Request;
 using ExpensesManagementApp.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+
 namespace ExpensesManagementApp.Controllers;
 
 [ApiController]
@@ -55,5 +60,22 @@ public class AuthController : ControllerBase
         }
 
     }
+
+    [HttpPost("guest")]
+    [AllowAnonymous]
+    public async Task<IActionResult> CreateGuestSession()
+    {
+        try
+        {
+            var result = await _authService.CreateGuestSessionAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { Error = "failed to create guest session: " + ex.Message });
+        }
+    }
+    
+    
 
 }

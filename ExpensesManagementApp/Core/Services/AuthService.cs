@@ -124,4 +124,39 @@ public class AuthService : IAuthService
         
         return dto;
     }
+
+    public async Task<UserLoginResponseDto> CreateGuestSessionAsync()
+    {
+        var sessionId = Guid.NewGuid();
+
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, sessionId.ToString()),
+            new Claim(ClaimTypes.Role, "Guest"),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64)
+        };
+
+        var jwtConfig = _configuration.GetSection("Jwt");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig["Key"]!));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: jwtConfig["Issuer"],
+            audience: jwtConfig["Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddDays(3),  // 3-day guest trial
+            signingCredentials: credentials
+        );
+
+        var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+        // No refresh token.
+        return new UserLoginResponseDto
+        {
+            AccessToken = accessToken,
+            RefreshToken = null,
+            RefreshTokenExpiry = null
+        };
+    }
 }

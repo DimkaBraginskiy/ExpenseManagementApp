@@ -17,59 +17,80 @@ public class ExpensesService : IExpensesService
         _context = context;
     }
 
-    public async Task<List<ExpenseResponseDto>> GetAllExpensesByUserIdAsync(CancellationToken token, int id)
+    public async Task<List<ExpenseResponseDto>> GetAllExpensesByUserIdAsync(
+        CancellationToken token,
+        int? userId,
+        Guid? guestSessionId)
     {
-        var expenses =
-            await _context.Expenses
-                .Where(e => e.UserId == id)
-                .Include(e => e.Category)
-                .Include(e => e.Currency)
-                .Include(e => e.Products)
-                .ToListAsync(token);
+        var query = _context.Expenses.AsQueryable();
 
-        if (expenses.Count == 0)
-        {
+        if (userId.HasValue)
+            query = query.Where(e => e.UserId == userId.Value);
+        else if (guestSessionId.HasValue)
+            query = query.Where(e => e.GuestSessionId == guestSessionId.Value);
+        else
+            throw new ArgumentException("No valid owner identifier");
+
+        var expenses = await query
+            .Include(e => e.Category)
+            .Include(e => e.Currency)
+            .Include(e => e.Products)
+            .ToListAsync(token);
+
+        if (!expenses.Any())
             throw new ArgumentException("No expenses found");
-        }
 
-        var expenseDtos = new List<ExpenseResponseDto>();
-
+        var dtos = new List<ExpenseResponseDto>();
         foreach (var expense in expenses)
         {
-            var dto = await ExpenseMapper.toDto(token, expense);
-
-            expenseDtos.Add(dto);
+            dtos.Add(await ExpenseMapper.toDto(token, expense));
         }
 
-        return expenseDtos;
+        return dtos;
     }
 
-    public async Task<ExpenseResponseDto> GetUserByIdAsync(CancellationToken token, int id)
+    public async Task<ExpenseResponseDto?> GetExpenseByIdAsync(
+        CancellationToken token,
+        int id,
+        int? userId,
+        Guid? guestSessionId)
     {
-        if (id.Equals(0))
-        {
-            throw new ArgumentException("Id is invalid");
-        }
+        var query = _context.Expenses.AsQueryable();
 
-        var expense = await _context.Expenses.Where(e => e.Id.Equals(id))
+        if (userId.HasValue)
+            query = query.Where(e => e.Id == id && e.UserId == userId.Value);
+        else if (guestSessionId.HasValue)
+            query = query.Where(e => e.Id == id && e.GuestSessionId == guestSessionId.Value);
+        else
+            return null;
+
+        var expense = await query
             .Include(e => e.Category)
             .Include(e => e.Currency)
             .Include(e => e.Products)
             .FirstOrDefaultAsync(token);
 
-        if (expense.Equals(null))
-        {
-            throw new ArgumentException("Expense not found");
-        }
+        if (expense == null)
+            return null;
 
-        var dto = await ExpenseMapper.toDto(token, expense);
-
-        return dto;
+        return await ExpenseMapper.toDto(token, expense);
     }
 
-    public async Task<ExpenseMinimalResponseDto> CreateExpenseAsync(CancellationToken token, int userId,
+    public async Task<ExpenseMinimalResponseDto> CreateExpenseAsync(
+        CancellationToken token, 
+        int? userId, 
+        Guid? guestSessionId, 
         ExpenseRequestDto dto)
     {
+        if (guestSessionId.HasValue)
+        {
+            var guestExpenseCount = await _context.Expenses
+                .CountAsync(e => e.GuestSessionId == guestSessionId.Value, token);
+
+            if (guestExpenseCount >= 10)
+                throw new InvalidOperationException("Guest trial limit reached (max 10 expenses).");
+        }
+        
         var category = await _context.Categories
             .FirstOrDefaultAsync(c => c.Name.ToLower() == dto.Category.Name.ToLower().Trim(), token);
         if (category == null)
@@ -94,6 +115,7 @@ public class ExpensesService : IExpensesService
             Date = dto.Date,
             Description = dto.Description,
             UserId = userId,
+            GuestSessionId = guestSessionId,
             Category = category,
             Currency = currency,
         };
@@ -221,35 +243,55 @@ public class ExpensesService : IExpensesService
         return expenseDtos;
     }
 
-    public async Task<bool> DeleteExpenseAsync(CancellationToken token, int id)
+    public async Task<bool> DeleteExpenseAsync(
+        CancellationToken token,
+        int id,
+        int? userId,
+        Guid? guestSessionId)
     {
-        var expense = await _context.Expenses.
-            Where(e => e.Id == id).
-            FirstOrDefaultAsync(token);
+        var query = _context.Expenses.AsQueryable();
+
+        if (userId.HasValue)
+            query = query.Where(e => e.Id == id && e.UserId == userId.Value);
+        else if (guestSessionId.HasValue)
+            query = query.Where(e => e.Id == id && e.GuestSessionId == guestSessionId.Value);
+        else
+            return false;
+
+        var expense = await query.FirstOrDefaultAsync(token);
 
         if (expense == null)
-        {
-            throw new ArgumentException($"Expense with id {id} does not exist");
-        }
+            return false;
 
         _context.Expenses.Remove(expense);
         await _context.SaveChangesAsync(token);
         return true;
     }
 
-    public async Task<ExpenseResponseDto> UpdateExpenseAsync(CancellationToken token, int id, ExpenseRequestDto dto)
+    public async Task<ExpenseResponseDto> UpdateExpenseAsync(
+        CancellationToken token,
+        int id,
+        ExpenseRequestDto dto,
+        int? userId,
+        Guid? guestSessionId)
     {
-        var expense = await _context.Expenses
+        IQueryable<Expense> query = _context.Expenses
             .Include(e => e.Category)
             .Include(e => e.Issuer)
             .Include(e => e.Currency)
-            .Include(e => e.Products)
-            .FirstOrDefaultAsync(e => e.Id == id, token);
+            .Include(e => e.Products);
+
+        if (userId.HasValue)
+            query = query.Where(e => e.Id == id && e.UserId == userId.Value);
+        else if (guestSessionId.HasValue)
+            query = query.Where(e => e.Id == id && e.GuestSessionId == guestSessionId.Value);
+        else
+            throw new ArgumentException("Invalid owner");
+
+        var expense = await query.FirstOrDefaultAsync(token);
 
         if (expense == null)
-        {
-            throw new ArgumentException($"Expense with id {id} does not exist");
-        }
+            throw new ArgumentException("Expense not found or access denied");
 
         // Update simple fields
         expense.Date = dto.Date.ToUniversalTime();
