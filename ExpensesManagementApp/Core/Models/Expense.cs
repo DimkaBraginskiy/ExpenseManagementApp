@@ -36,6 +36,8 @@ public class Expense
     [ForeignKey("Currency")]
     public int? CurrencyId { get; set; }
     public Currency Currency { get; set;} = null!;
+    
+    public int? GuestSessionId { get; set; }
 
     public IEnumerable<Product> Products { get; set; }= new List<Product>();
 }
