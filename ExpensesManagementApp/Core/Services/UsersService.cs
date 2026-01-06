@@ -25,7 +25,9 @@ public class UsersService : IUsersService
 
     public async Task<IEnumerable<UserDetailedResponseDto>> GetAllUsersAsync(CancellationToken token)
     {
-        var users = await _context.Users.ToListAsync(token);
+        var users = await _context.Users
+            .Where(u => !u.IsDeleted)
+            .ToListAsync(token);
 
         List<UserDetailedResponseDto> response = new List<UserDetailedResponseDto>();
 
@@ -105,16 +107,14 @@ public class UsersService : IUsersService
 
     public async Task<bool> DeleteUserByEmailAsync(CancellationToken token, string email)
     {
-        var user = await _context.Users.
-            Where(u => u.Email.ToLower() == email.ToLower()).
-            FirstOrDefaultAsync(token);
-        
-        if (user == null)
-        {
-            return false;
-        }
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower(), token);
 
-        _context.Users.Remove(user);
+        if (user == null) return false;
+
+        user.IsDeleted = true;
+        user.DeletedAt = DateTime.UtcNow;
+
         await _context.SaveChangesAsync(token);
         return true;
     }
@@ -168,5 +168,27 @@ public class UsersService : IUsersService
             PhoneNumber = user.PhoneNumber,
             AccountCreationDate = user.AccountCreationDate
         };
+    }
+
+    public async Task<UserDetailedResponseDto> GetUserByEmailAsync(CancellationToken token, string email)
+    {
+        var res = await _context.Users
+            .Where(u => u.Email.ToLower() == email.ToLower())
+            .FirstOrDefaultAsync(token);
+
+        if (res == null)
+        {
+            throw new ArgumentException($"User with email {email} not found");
+        }
+
+        var dto = new UserDetailedResponseDto()
+        {
+            Email = res.Email,
+            UserName = res.UserName,
+            PhoneNumber = res.PhoneNumber,
+            AccountCreationDate = res.AccountCreationDate
+        };
+
+        return dto;
     }
 }

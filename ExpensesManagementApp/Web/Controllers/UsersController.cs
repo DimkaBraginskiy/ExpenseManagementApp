@@ -76,6 +76,40 @@ public class UsersController : ControllerBase
         }
     }
 
+    [HttpGet("{email}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<UserDetailedResponseDto>> GetUserByEmailAsync(CancellationToken token, string email)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out int userId))
+        {
+            return Unauthorized(new { Error = "Invalid user" });    
+        }
+
+        try
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                throw new ArgumentException($"User with email {email} not found");
+            }
+
+            var res = await _usersService.GetUserByEmailAsync(token, email);
+
+            if (res == null)
+            {
+                throw new ArgumentException($"User with email {email} not found");
+            }
+
+            return Ok(res);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Could not get the user: " + ex.Message);
+        }
+    }
+
 
     [HttpDelete]
     [Authorize(Roles = "Admin,User")]

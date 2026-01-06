@@ -15,8 +15,7 @@ export function ExpenseCard({ expense }: ExpenseCardProps) {
                 <h3 className={styles.expenseDescription}>{previewDescription}</h3>
                 <span className={styles.expenseAmount}>
                     {expense.totalAmount.toFixed(2)}
-                    {/* Add currency display if needed */}
-                    {` ${expense.currency?.name}`}
+                    {`${expense.currency?.name}`}
                 </span> 
             </div>
 
@@ -31,12 +30,12 @@ export function ExpenseCard({ expense }: ExpenseCardProps) {
                 </span>
                 {expense.category && (
                     <span className={styles.expenseCategory}>
-                        {expense.category.name}  {/* Access the name property */}
+                        {expense.category.name}
                     </span>
                 )}
             </div>
 
-            {/* Optional: Show issuer if needed */}
+            
             {expense.issuer && (
                 <div className={styles.expenseIssuer}>
                     Issuer: {expense.issuer.name}

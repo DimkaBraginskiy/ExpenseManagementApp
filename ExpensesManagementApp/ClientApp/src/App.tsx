@@ -9,6 +9,9 @@ import {DetailedExpense} from "./pages/DetailedExpense/DetailedExpense.tsx";
 import {CreateExpense} from "./pages/CreateExpense/CreateExpense.tsx";
 import {EditExpense} from "./pages/EditExpense/EditExpense.tsx";
 import {MeEdit} from "./pages/MeEdit/MeEdit.tsx";
+import React from "react";
+import {UserProfile} from "./pages/Me/UserProfile.tsx";
+import {UserProfileEdit} from "./pages/MeEdit/UserProfileEdit.tsx";
 
 
 function App() {
@@ -37,7 +40,7 @@ function App() {
                 <Route path={"/me"} element=
                     {
                         <Layout showHeader={true} showFooter={true}>
-                            <Me/>
+                            <UserProfile/>
                         </Layout>
                     }/>
                 
@@ -68,8 +71,24 @@ function App() {
                 <Route path={"/me/edit"} element=
                     {
                         <Layout showHeader={true} showFooter={true}>
-                            <MeEdit/>
+                            <UserProfileEdit/>
                         </Layout>
+                    }
+                />
+                
+                <Route path={"/users/:email"} element=
+                    {
+                        <Layout showHeader={true} showFooter={true}>
+                            <UserProfile/>
+                        </Layout>
+                    }
+                />
+                
+                <Route path={"/users/:email/edit"}element = 
+                    {
+                        <Layout showHeader={true} showFooter={true}>
+                            <UserProfileEdit/>
+                        </Layout>   
                     }
                 />
             </Routes>

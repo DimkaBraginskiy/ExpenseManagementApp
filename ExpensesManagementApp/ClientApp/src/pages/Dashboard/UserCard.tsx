@@ -1,5 +1,7 @@
 ﻿import type {User} from "./User";
 import styles from "./Dashboard.module.css"
+import React from "react";
+import {Link} from "react-router-dom";
 
 interface UserCardProps{
     user: User;
@@ -18,29 +20,34 @@ export function UserCard({ user } : UserCardProps ){
     };
 
     return (
-        <div className={styles.userCard}>
-            <div className={styles.userHeader}>
-                <div className={styles.userNameWrapper}>
-                    <h3 className={styles.userName}>
-                        {previewName}
-                    </h3>
-                    <p className={styles.userEmail}>
-                        {previewEmail}
-                    </p>
+        <Link
+            to={`/users/${user.email}`}
+            className={styles.expenseLink}
+        >
+            <div className={styles.userCard}>
+                <div className={styles.userHeader}>
+                    <div className={styles.userNameWrapper}>
+                        <h3 className={styles.userName}>
+                            {previewName}
+                        </h3>
+                        <p className={styles.userEmail}>
+                            {previewEmail}
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            <div className={styles.userFooter}>
+                <div className={styles.userFooter}>
                 <span className={styles.userDate}>
                     Joined: {formatDate(user.accountCreationDate)}
                 </span>
 
-                {user.phoneNumber && (
-                    <span className={styles.userPhone}>
+                    {user.phoneNumber && (
+                        <span className={styles.userPhone}>
                         📱 {user.phoneNumber}
                     </span>
-                )}
+                    )}
+                </div>
             </div>
-        </div>
+        </Link>
     );
 }

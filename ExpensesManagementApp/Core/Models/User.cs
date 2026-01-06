@@ -12,5 +12,6 @@ public class User : IdentityUser<int>
     
     public ICollection<Expense> Expenses { get; set; } = new List<Expense>();
     
-    
+    public bool IsDeleted { get; set; } = false;
+    public DateTime? DeletedAt { get; set; }
 }

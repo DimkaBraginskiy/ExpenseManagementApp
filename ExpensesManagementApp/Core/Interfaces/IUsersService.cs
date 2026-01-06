@@ -14,4 +14,7 @@ public interface IUsersService
     public Task<bool> DeleteUserByEmailAsync(CancellationToken token, string email);
 
     public Task<UserDetailedResponseDto> UpdateUserByEmailAsync(CancellationToken token, string email, RegisterUserDto dto);
+
+    
+    public Task<UserDetailedResponseDto> GetUserByEmailAsync(CancellationToken token, string email);
 }
