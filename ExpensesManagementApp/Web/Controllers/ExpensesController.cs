@@ -22,15 +22,20 @@ public class ExpensesController : ControllerBase
 
     [HttpGet("")]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<ExpenseResponseDto>>> GetAllExpensesByUserIdAsync(CancellationToken token)
+    public async Task<ActionResult<ExpenseResponseDto>> GetAllExpensesAsync(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10)
     {
+        var token = HttpContext.RequestAborted;
+        
         var (userId, guestSessionId, _) = GetOwnerInfo();
         
         try
-        {
-            var expenses = await _expensesService.GetAllExpensesByUserIdAsync(token, userId, guestSessionId);
+        { 
+            var result = await _expensesService.GetAllExpensesPaginatedAsync(
+                token, userId, guestSessionId, page, pageSize);
 
-            return Ok(expenses);
+            return Ok(result);
         }
         catch (Exception ex)
         {
@@ -265,28 +270,28 @@ public class ExpensesController : ControllerBase
     {
         var subClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value 
                        ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
+        
         if (string.IsNullOrEmpty(subClaim))
             throw new UnauthorizedAccessException("Missing subject claim");
-
+        
         var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "User";
-
+        
         int? userId = null;
         Guid? guestSessionId = null;
-
+        
         if (role == "Guest")
         {
             if (!Guid.TryParse(subClaim, out var guid))
                 throw new UnauthorizedAccessException("Invalid guest session ID");
             guestSessionId = guid;
         }
-        else
-        {
-            if (!int.TryParse(subClaim, out var id))
-                throw new UnauthorizedAccessException("Invalid user ID");
-            userId = id;
+        else 
+        { 
+            if (!int.TryParse(subClaim, out var id)) 
+                throw new UnauthorizedAccessException("Invalid user ID"); 
+            userId = id; 
         }
-
+        
         return (userId, guestSessionId, role);
     }
 }

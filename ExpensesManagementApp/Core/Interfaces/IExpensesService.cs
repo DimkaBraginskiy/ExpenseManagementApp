@@ -11,6 +11,14 @@ public interface IExpensesService
         CancellationToken token,
         int? userId,
         Guid? guestSessionId);
+
+    public Task<PaginatedExpenseResponseDto> GetAllExpensesPaginatedAsync(
+        CancellationToken token,
+        int? userId,
+        Guid? guestSessionId,
+        int pageNumber = 1,
+        int pageSize = 10
+    );
     public Task<ExpenseMinimalResponseDto> CreateExpenseAsync(
         CancellationToken token, 
         int? userId, 

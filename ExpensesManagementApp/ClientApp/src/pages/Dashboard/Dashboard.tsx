@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {use, useCallback, useEffect, useRef, useState} from "react";
 import {authService} from "../../../services/AuthService.tsx";
 
 import styles from "./Dashboard.module.css";
@@ -13,15 +13,86 @@ export function Dashboard() {
     const [error, setError] = useState('');
     const [token, setToken] = useState('');
     const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [users, setUsers] = useState<User[]>([]);
-
+    
+    //scrolling pagination variables
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [totalCount, setTotalCount] = useState(0);
+    const pageSize = 10;
+    
     //guest variables
     const expenseCount = expenses.length;
     const isLimitReached = expenseCount >= 10;
 
     const role = getUserRole();
     const navigate = useNavigate();
+    const observer = useRef<IntersectionObserver | null>(null);
+    
+    const lastExpenseRef = useCallback(
+        (node: HTMLDivElement | null) => {
+            if(loading || loadingMore || !hasMore) return;
+            if(observer.current) observer.current.disconnect();
+            
+            observer.current = new IntersectionObserver((entries) => {
+                if(entries[0].isIntersecting && hasMore){
+                    setPage((prev) => prev + 1);
+                }
+            });
+            
+            if(node) observer.current.observe(node);
+        }  ,
+        [loading, loadingMore, hasMore]
+    );
+    
+    const fetchExpenses = async (pageNum: number, append = false) => {
+        const token = authService.getAccessToken();
+        
+        try{
+            if(pageNum === 1) setLoading(true);
+            else setLoadingMore(true);
+
+            const response = await fetch(
+                `/api/Expenses?page=${pageNum}&pageSize=${pageSize}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                if (response.status === 404 || response.status === 400) {
+                    if (pageNum === 1) {
+                        setExpenses([]);
+                        setTotalCount(0);
+                    }
+                    setHasMore(false);
+                    return;
+                }
+                throw new Error("Failed to load expenses");
+            }
+
+            const data = await response.json();
+            
+            if(append){
+                setExpenses((prev) => [...prev, ...data.items]);
+            }else{
+                setExpenses(data.items);
+            }
+            
+            setTotalCount(data.totalCount);
+            setHasMore(data.pageNumber < data.totalPages);
+        }catch(error: any){
+            setError("Error loading expenses: " + error.message);
+        }finally {
+            setLoading(false);
+            setLoadingMore(false);
+        }
+    }
 
     useEffect(() => {
         const loadData = async () => {
@@ -32,63 +103,48 @@ export function Dashboard() {
                 return;
             }
 
-            setToken(token);
+            
+            if (role === "Admin") {
+                const response = await fetch('api/Users', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-type': 'application/json'
+                    }                 
+                });
 
-            try {
-                if (role === "Admin") {
-                    const response = await fetch('api/Users', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-type': 'application/json'
-                        }
-                    });
-
-                    if (!response.ok) {
-                        throw new Error("No users found!");
-                    }
-
-                    const data: any = await response.json();
-                    setUsers(data);
-
-                    console.log(`Admin role: ${role}`);
-
-                } else {
-                    const response = await fetch('api/Expenses', {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-type': 'application/json'
-                        }
-                    });
-
-                    if (!response.ok) {
-                        if (response.status === 400 && role === "Guest") {
-                            setExpenses([]);
-                        } else {
-                            throw new Error('No expenses found');
-                        }
-                    } else {
-                        const data = await response.json();
-                        setExpenses(data);
-                    }
-
-                    console.log(`User role: ${role}`);
+                if (!response.ok) {
+                    throw new Error("No users found!");
                 }
 
-                // console.log("API Response:", data);
-                // console.log("First expense:", data[0]);
+                const data: any = await response.json();
+                setUsers(data);
 
-            } catch (err: any) {
-                setError('Error: ' + err.message);
-            } finally {
-                setLoading(false);
+                console.log(`Admin role: ${role}`);
+
+            } else {
+                    setExpenses([]);
+                    setPage(1);
+                    setHasMore(true);
+                    setTotalCount(0);
+                    await fetchExpenses(1, false);
+
+                    console.log(`User role: ${role}`);
             }
+            // console.log("API Response:", data);
+            // console.log("First expense:", data[0]);
+            
         };
 
         loadData();
     }, [role])
 
+    useEffect(() => {
+        if(page > 1){
+            fetchExpenses(page, true);
+        }
+    }, [page]);
+    
     if (loading) {
         return
         <div className={styles.container}>
@@ -144,64 +200,71 @@ export function Dashboard() {
                 )}
 
                 {/* Guest user */}
-                {role === "Guest" && (
-                    <div className={styles.container}>
-                        <main className={styles.main}>
-                            <h2>Hi Guest!</h2>
-                            <p>You're using a <strong>free trial</strong>:</p>
+                {(role === "User" || role === "Guest") && (
+                    <>
+                        {/* Add Expense button & guest messages */}
+                        {role === "Guest" && (
+                            <>
+                                <h2>Hi Guest!</h2>
+                                <p>You're using a <strong>free trial</strong>:</p>
+                                <ul style={{ textAlign: 'left', maxWidth: '400px', margin: '20px auto' }}>
+                                    <li>Add up to <strong>10 expenses</strong></li>
+                                    <li>Valid for <strong>3 days</strong></li>
+                                </ul>
+                                <div className={styles.actions}>
+                                    <button onClick={() => navigate('/login')}>Log In</button>
+                                    <button onClick={() => navigate('/register')}>Register for Full Access</button>
+                                </div>
+                            </>
+                        )}
 
-                            <ul style={{textAlign: 'left', maxWidth: '400px', margin: '20px auto'}}>
-                                <li>Add up to <strong>10 expenses</strong></li>
-                                <li>Valid for <strong>3 days</strong></li>
-                                <li>No registration needed but highly encouraged</li>
-                            </ul>
-
-                            <div className={styles.actions} style={{margin: '30px 0'}}>
-                                <button
-                                    onClick={() => navigate('/login')}
-                                    style={{marginRight: '10px'}}
-                                >
-                                    Log In
+                        <div style={{ margin: '20px 0' }}>
+                            <Link to="/expenses/create">
+                                <button disabled={role === "Guest" && isLimitReached}>
+                                    + Add Expense {role === "Guest" && `(${totalCount}/10)`}
                                 </button>
-                                <button onClick={() => navigate('/register')}>
-                                    Register for Full Access
-                                </button>
-                            </div>
-
-                            <div style={{margin: '20px 0'}}>
-                                <Link to="/expenses/create">
-                                    <button disabled={isLimitReached}>
-                                        + Add Expense ({expenseCount}/10)
-                                    </button>
-                                </Link>
-
-                                {isLimitReached && (
-                                    <p style={{color: 'red', marginTop: '10px'}}>
-                                        Limit reached! Register to add more.
-                                    </p>
-                                )}
-                            </div>
-
-                            {expenseCount > 0 ? (
-                                <>
-                                    <h3>Your Trial Expenses</h3>
-                                    <div className={styles.expensesGrid}>
-                                        {expenses.map((expense) => (
-                                            <Link
-                                                to={`/expenses/${expense.id}`}
-                                                className={styles.expenseLink}
-                                                key={expense.id}
-                                            >
-                                                <ExpenseCard expense={expense}/>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </>
-                            ) : (
-                                <p>No expenses yet. Click above to add your first one!</p>
+                            </Link>
+                            {role === "Guest" && isLimitReached && (
+                                <p style={{ color: 'red', marginTop: '10px' }}>
+                                    Limit reached! Register to add more.
+                                </p>
                             )}
-                        </main>
-                    </div>
+                        </div>
+
+                        <h3>{role === "Guest" ? "Your Trial Expenses" : "My Expenses"}</h3>
+
+                        {expenses.length === 0 ? (
+                            <p>No expenses yet. Click above to add your first one!</p>
+                        ) : (
+                            <div className={styles.expensesGrid}>
+                                {expenses.map((expense, index) => (
+                                    <div
+                                        key={expense.id}
+                                        // Attach observer to last item
+                                        ref={index === expenses.length - 1 ? lastExpenseRef : null}
+                                    >
+                                        <Link to={`/expenses/${expense.id}`} className={styles.expenseLink}>
+                                            <ExpenseCard expense={expense} />
+                                        </Link>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Loading indicator at bottom */}
+                        {loadingMore && (
+                            <div style={{ textAlign: 'center', padding: '20px' }}>
+                                <p>Loading more expenses...</p>
+                            </div>
+                        )}
+
+                        {/* End of list message */}
+                        {!hasMore && expenses.length > 0 && (
+                            <div style={{ textAlign: 'center', padding: '30px', color: '#666' }}>
+                                <p>— You've reached the end —</p>
+                            </div>
+                        )}
+                    </>
                 )}
 
                 {/* Admin user */}
@@ -221,33 +284,6 @@ export function Dashboard() {
                             )}
                         </main>
                     </div>
-                )}
-
-                {/* Regular user */}
-                {role === "User" && (
-                    <>
-                        <button>
-                            <Link to="/expenses/create">+ New Expense</Link>
-                        </button>
-
-                        <h3>My Expenses</h3>
-
-                        {expenses.length === 0 ? (
-                            <p>No expenses yet.</p>
-                        ) : (
-                            <div className={styles.expensesGrid}>
-                                {expenses.map((expense) => (
-                                    <Link
-                                        to={`/expenses/${expense.id}`}
-                                        className={styles.expenseLink}
-                                        key={expense.id}
-                                    >
-                                        <ExpenseCard expense={expense}/>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </>
                 )}
             </main>
         </div>

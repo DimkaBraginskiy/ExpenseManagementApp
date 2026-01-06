@@ -17,6 +17,62 @@ public class ExpensesService : IExpensesService
         _context = context;
     }
 
+    public async Task<PaginatedExpenseResponseDto> GetAllExpensesPaginatedAsync(
+        CancellationToken token,
+        int? userId,
+        Guid? guestSessionId,
+        int pageNumber = 1,
+        int pageSize = 10
+        )
+    {
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 10) pageSize = 10;
+        if (pageSize > 100) pageSize = 100;
+
+        var query = _context.Expenses.AsQueryable();
+
+        if (userId.HasValue)
+        {
+            query = query.Where(e => e.UserId == userId.Value);
+        }
+        else if (guestSessionId.HasValue)
+        {
+            query = query.Where(e => e.GuestSessionId == guestSessionId.Value);
+        }
+        else
+        {
+            throw new UnauthorizedAccessException("Invalid owner");
+        }
+
+        var totalCount = await query.CountAsync(token);
+
+        var expenses = await query
+            .OrderByDescending(e => e.Date)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Include(e => e.Category)
+            .Include(e => e.Currency)
+            .Include(e => e.Products)
+            .ToListAsync(token);
+
+        var dtos = new List<ExpenseResponseDto>();
+
+        foreach (var expense in expenses)
+        {
+            dtos.Add(await ExpenseMapper.toDto(token, expense));
+        }
+
+        return new PaginatedExpenseResponseDto()
+        {
+            Items = dtos,
+            PageNumber = pageNumber,
+            PageSize = pageSize,
+            TotalCount = totalCount
+        };
+
+    }
+    
+
     public async Task<List<ExpenseResponseDto>> GetAllExpensesByUserIdAsync(
         CancellationToken token,
         int? userId,
