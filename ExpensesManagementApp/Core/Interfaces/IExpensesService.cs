@@ -56,4 +56,9 @@ public interface IExpensesService
         ExpenseRequestDto dto,
         int? userId,
         Guid? guestSessionId);
+
+    public Task<IEnumerable<ExpenseCategoryStatResponseDto>> GetCategoryStatisticsAsync(
+        CancellationToken token,
+        int? id
+        );
 }

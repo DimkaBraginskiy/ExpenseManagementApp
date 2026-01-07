@@ -441,4 +441,50 @@ public class ExpensesService : IExpensesService
         // Map and return
         return await  ExpenseMapper.toDto(token, expense);
     }
+    
+    
+    //Statistics queries
+    public async Task<IEnumerable<ExpenseCategoryStatResponseDto>> GetCategoryStatisticsAsync(
+        CancellationToken token,
+        int? userId
+        )
+    {
+
+        var query = _context.Expenses.Where(e => e.UserId == userId)
+            .Join(_context.Categories, expense => expense.CategoryId, category => category.Id,
+                (expense, category) =>
+                    new { Name = category.Name, Id = expense.CategoryId });
+
+
+        var pairs = await query.ToListAsync(token);
+
+        var categoryCount = pairs
+            .GroupBy(x => x.Name)
+            .Select(g => new
+            {
+                Name = g.Key,
+                Count = g.Count()
+            })
+            .ToList();
+
+        var dtos = new List<ExpenseCategoryStatResponseDto>();
+        
+        Console.WriteLine($"UserId:{userId}");
+        
+        foreach (var exp in categoryCount)
+        {
+            var dto = new ExpenseCategoryStatResponseDto()
+            {
+                Name = exp.Name,
+                Count = exp.Count
+            };
+            
+            dtos.Add(dto);
+            
+            Console.WriteLine($"Name: {exp.Name} ; Count: {exp.Count}");
+        }
+        
+        
+        return dtos;
+    }
 }

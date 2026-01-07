@@ -18,6 +18,28 @@ public class ExpensesController : ControllerBase
     public ExpensesController(IExpensesService expensesService)
     {
         _expensesService = expensesService;
+        
+    }
+    
+    //Statistics
+    [HttpGet("stats")]
+    [Authorize]
+    public async Task<ActionResult<IEnumerable<ExpenseCategoryStatResponseDto>>> GetExpenseCategoryStatAsync()
+    {
+        var token = HttpContext.RequestAborted;
+        
+        var (userId, guestSessionId, _) = GetOwnerInfo();
+
+        try
+        {
+            var res = await _expensesService.GetCategoryStatisticsAsync(token, userId);
+
+            return Ok(res);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 
     [HttpGet("")]
@@ -30,8 +52,9 @@ public class ExpensesController : ControllerBase
         [FromQuery] string? groupBy = null,
         [FromQuery] string? dateRange = null)
     {
-        var token = HttpContext.RequestAborted;
         
+        var token = HttpContext.RequestAborted;
+
         var (userId, guestSessionId, _) = GetOwnerInfo();
         
         try
@@ -59,6 +82,7 @@ public class ExpensesController : ControllerBase
     [Authorize]
     public async Task<ActionResult<ExpenseResponseDto>> GetExpenseByIdAsync(CancellationToken token, int id)
     {
+        
         var (userId, guestSessionId, _) = GetOwnerInfo();
         
         var result = await _expensesService.GetExpenseByIdAsync(token, id, userId, guestSessionId);

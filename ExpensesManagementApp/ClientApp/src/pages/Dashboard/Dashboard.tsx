@@ -9,6 +9,8 @@ import type {User} from "./User.tsx";
 import { getUserRole } from "../../utils/jwt/jwtUtils.tsx";
 import {UserCard} from "./UserCard.tsx";
 import {useTranslation} from "react-i18next";
+import PieChartTest from "../Graphs/PieChartTest.tsx";
+import RegisteringLineChart from "../Graphs/RegisteringLineChart.tsx";
 
 export function Dashboard() {
     //internationalization
@@ -242,6 +244,7 @@ export function Dashboard() {
                         </select>
                     </div>
                 )}
+                
 
                 {/* Not logged in - Welcome page */}
                 {!authService.getAccessToken() && (
@@ -279,6 +282,11 @@ export function Dashboard() {
                 {/* Guest user */}
                 {(role === "User" || role === "Guest") && (
                     <>
+                        
+                        
+                        <PieChartTest/>
+                        
+                        
                         {/* Add Expense button & guest messages */}
                         {role === "Guest" && (
                             <>
@@ -373,6 +381,9 @@ export function Dashboard() {
                 {role === "Admin" && (
                     <div className={styles.container}>
                         <main className={styles.main}>
+
+                            <RegisteringLineChart/>
+                            
                             <h3>{t('admin.allUsers')}</h3>
 
                             {users.length === 0 ? (

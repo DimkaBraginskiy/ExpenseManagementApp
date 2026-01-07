@@ -191,4 +191,30 @@ public class UsersService : IUsersService
 
         return dto;
     }
+
+    public async Task<IEnumerable<UserRegistrationStatsResponseDto>> GetAllUserRegistrationStatAsync(
+        CancellationToken token)
+    {
+        var currentYear =  DateTime.UtcNow.Year;
+        
+        var years = await _context.Users
+            .Where(u => !u.IsDeleted
+                        && u.AccountCreationDate != DateTime.MinValue
+                        && u.AccountCreationDate != DateTime.MaxValue
+                        && u.AccountCreationDate.Year >= 2000
+                        && u.AccountCreationDate.Year <= currentYear + 10)
+            .GroupBy(u => new
+            {
+                Year = u.AccountCreationDate.Year,
+                Month = u.AccountCreationDate.Month
+            })
+            .Select(g => new UserRegistrationStatsResponseDto()
+            {
+                Year = g.Key.Year,
+                Month = g.Key.Month,
+                Registrations = g.Count()
+            }).ToListAsync(token);
+
+        return years;
+    }
 }

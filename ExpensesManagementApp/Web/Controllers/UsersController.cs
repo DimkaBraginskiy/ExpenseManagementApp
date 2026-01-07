@@ -20,6 +20,24 @@ public class UsersController : ControllerBase
     {
         _usersService = usersService;
     }
+    
+    //Statistics
+
+    [HttpGet("stats")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<UserRegistrationStatsResponseDto>>> GetUserRegisterStatAsync(CancellationToken token)
+    {
+        try
+        {
+            var res = await _usersService.GetAllUserRegistrationStatAsync(token);
+
+            return Ok(res);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
 
     [HttpPost]
     [Authorize(Roles = "User")]
