@@ -16,9 +16,14 @@ public interface IExpensesService
         CancellationToken token,
         int? userId,
         Guid? guestSessionId,
-        int pageNumber = 1,
-        int pageSize = 10
+        int pageNumber,
+        int pageSize,
+        string sortBy,
+        string sortDir,
+        string? groupBy,
+        string? dateRange
     );
+    
     public Task<ExpenseMinimalResponseDto> CreateExpenseAsync(
         CancellationToken token, 
         int? userId, 

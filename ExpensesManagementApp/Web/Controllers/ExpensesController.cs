@@ -24,7 +24,11 @@ public class ExpensesController : ControllerBase
     [Authorize]
     public async Task<ActionResult<ExpenseResponseDto>> GetAllExpensesAsync(
         [FromQuery] int page = 1,
-        [FromQuery] int pageSize = 10)
+        [FromQuery] int pageSize = 10,
+        [FromQuery] string? sortBy = "date",
+        [FromQuery] string? sortDir = "desc",
+        [FromQuery] string? groupBy = null,
+        [FromQuery] string? dateRange = null)
     {
         var token = HttpContext.RequestAborted;
         
@@ -33,7 +37,15 @@ public class ExpensesController : ControllerBase
         try
         { 
             var result = await _expensesService.GetAllExpensesPaginatedAsync(
-                token, userId, guestSessionId, page, pageSize);
+                token, 
+                userId, 
+                guestSessionId, 
+                page, 
+                pageSize,
+                sortBy,
+                sortDir,
+                groupBy,
+                dateRange);
 
             return Ok(result);
         }

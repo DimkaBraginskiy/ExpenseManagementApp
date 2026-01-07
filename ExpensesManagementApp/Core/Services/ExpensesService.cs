@@ -21,15 +21,23 @@ public class ExpensesService : IExpensesService
         CancellationToken token,
         int? userId,
         Guid? guestSessionId,
-        int pageNumber = 1,
-        int pageSize = 10
-        )
+        int pageNumber,
+        int pageSize,
+        string sortBy,
+        string sortDir,
+        string? groupBy,
+        string? dateRange
+    )
     {
         if (pageNumber < 1) pageNumber = 1;
         if (pageSize < 10) pageSize = 10;
         if (pageSize > 100) pageSize = 100;
 
-        var query = _context.Expenses.AsQueryable();
+        var query = _context.Expenses
+            .Include(e => e.Category)
+            .Include(e => e.Currency)
+            .Include(e => e.Products)
+            .AsQueryable();
 
         if (userId.HasValue)
         {
@@ -43,16 +51,36 @@ public class ExpensesService : IExpensesService
         {
             throw new UnauthorizedAccessException("Invalid owner");
         }
+        
+        query = (sortBy.ToLower(), sortDir.ToLower()) switch
+        {
+            ("description", "asc") => query.OrderBy(e => e.Description),
+            ("description", "desc") => query.OrderByDescending(e => e.Description),
+
+            ("date", "asc") => query.OrderBy(e => e.Date),
+            ("date", "desc") => query.OrderByDescending(e => e.Date),
+
+            _ => query.OrderByDescending(e => e.Date)
+        };
+        
+        if (!string.IsNullOrEmpty(dateRange))
+        {
+            var now = DateTime.UtcNow;
+
+            query = dateRange switch
+            {
+                "week" => query.Where(e => e.Date >= now.AddDays(-7)),
+                "month" => query.Where(e => e.Date >= now.AddMonths(-1)),
+                "year" => query.Where(e => e.Date >= now.AddYears(-1)),
+                _ => query
+            };
+        }
 
         var totalCount = await query.CountAsync(token);
 
         var expenses = await query
-            .OrderByDescending(e => e.Date)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .Include(e => e.Category)
-            .Include(e => e.Currency)
-            .Include(e => e.Products)
             .ToListAsync(token);
 
         var dtos = new List<ExpenseResponseDto>();
