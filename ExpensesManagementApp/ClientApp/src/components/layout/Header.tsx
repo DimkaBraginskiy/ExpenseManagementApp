@@ -3,11 +3,14 @@ import React, {useEffect, useState} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {authService} from "../../../services/AuthService.tsx";
 import {Me} from "../../pages/Me/Me.tsx";
+import logoImage from "../EMA_Logo.png";
 
 
 export function Header(){
     const[userInitial, setUserInitial] = useState('U');
     const navigate = useNavigate();
+
+    
 
     useEffect(() => {
         const loadUserInfo = async () => {
@@ -59,7 +62,11 @@ export function Header(){
         <header className={styles.header}>
             <div className={styles.headerContent}>
                 <Link to="/" className={styles.logo}>
-                    Expense Manager
+                    <img
+                        src={logoImage}
+                        alt="Expense Manager Logo"
+                        className={styles.logoImage}
+                    />
                 </Link>
 
                 <div className={styles.headerRight}>

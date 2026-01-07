@@ -28,10 +28,22 @@
 }
 
 .logo {
-    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.logoImage {
+    height: 170px;
+    width: auto;
+}
+
+.logoText {
     font-size: 1.5rem;
     font-weight: bold;
-    text-decoration: none;
+    color: white;
+    margin: 0;
 }
 
 .avatarLink {
