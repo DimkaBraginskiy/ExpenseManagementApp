@@ -8,8 +8,12 @@ import {Link, useNavigate} from "react-router-dom";
 import type {User} from "./User.tsx";
 import { getUserRole } from "../../utils/jwt/jwtUtils.tsx";
 import {UserCard} from "./UserCard.tsx";
+import {useTranslation} from "react-i18next";
 
 export function Dashboard() {
+    //internationalization
+    const { t } = useTranslation();
+    
     const [error, setError] = useState('');
     const [token, setToken] = useState('');
     const [loading, setLoading] = useState(true);
@@ -300,7 +304,9 @@ export function Dashboard() {
                             )}
                         </div>
 
-                        <h3>{role === "Guest" ? "Your Trial Expenses" : "My Expenses"}</h3>
+                        <h3>
+                            {role === "Guest" ? "Your Trial Expenses" : t("dashboard.title")}
+                        </h3>
 
                         {expenses.length === 0 ? (
                             <p>No expenses yet. Click above to add your first one!</p>

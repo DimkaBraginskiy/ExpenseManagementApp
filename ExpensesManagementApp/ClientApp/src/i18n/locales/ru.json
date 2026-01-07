@@ -1,0 +1,12 @@
+﻿{
+  "dashboard": {
+    "title": "Мои расходы",
+    "addExpense": "Добавить расход",
+    "noExpenses": "Расходов нет"
+  },
+  "filters": {
+    "sortBy": "Сортировать по",
+    "date": "Дата",
+    "description": "Описание"
+  }
+}

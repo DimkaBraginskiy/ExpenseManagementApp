@@ -1,0 +1,12 @@
+﻿{
+  "dashboard": {
+    "title": "My Expenses",
+    "addExpense": "Add Expense",
+    "noExpenses": "No expenses yet"
+  },
+  "filters": {
+    "sortBy": "Sort by",
+    "date": "Date",
+    "description": "Description"
+  }
+}

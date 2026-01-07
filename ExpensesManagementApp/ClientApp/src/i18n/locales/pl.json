@@ -1,0 +1,12 @@
+﻿{
+  "dashboard": {
+    "title": "Moje wydatki",
+    "addExpense": "Dodaj wydatek",
+    "noExpenses": "Brak wydatków"
+  },
+  "filters": {
+    "sortBy": "Sortuj według",
+    "date": "Data",
+    "description": "Opis"
+  }
+}
