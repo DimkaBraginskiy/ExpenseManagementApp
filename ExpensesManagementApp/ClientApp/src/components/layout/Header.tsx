@@ -4,9 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import {authService} from "../../../services/AuthService.tsx";
 import {Me} from "../../pages/Me/Me.tsx";
 import logoImage from "../EMA_Logo.png";
+import {useTranslation} from "react-i18next";
 
 
 export function Header(){
+    //internationalization
+    const { t } = useTranslation();
+    
     const[userInitial, setUserInitial] = useState('U');
     const navigate = useNavigate();
 
@@ -77,13 +81,13 @@ export function Header(){
 
                         <div className={styles.dropdownMenu}>
                             <Link to="/me" className={styles.dropdownItem}>
-                                My Profile
+                                {t('profileButtons.myProfile')}
                             </Link>
                             <Link to="/me/edit" className={styles.dropdownItem}>
-                                Edit Profile
+                                {t('profileButtons.editProfile')}
                             </Link>
                             <button onClick={handleLogout} className={styles.dropdownItem}>
-                                Logout
+                                {t('profileButtons.logout')}
                             </button>
                         </div>
                     </div>

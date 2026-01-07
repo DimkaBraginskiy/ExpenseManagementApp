@@ -214,59 +214,63 @@ export function Dashboard() {
         <div className={styles.container}>
             <main className={styles.main}>
 
-                <div className={styles.filters}>
-                    <select value={sortBy} onChange={e => setSortBy(e.target.value as any)}>
-                        <option value="date">Date</option>
-                        <option value="description">Description</option>
-                    </select>
+                {role !== "Admin" && (
+                    <div className={styles.filters}>
+                        <h3>{t('filters.sortBy')}</h3>
+                        <select value={sortBy} onChange={e => setSortBy(e.target.value as any)}>
+                            <option value="date">{t('filters.date')}</option>
+                            <option value="description">{t('filters.description')}</option>
+                        </select>
 
-                    <select value={sortDir} onChange={e => setSortDir(e.target.value as any)}>
-                        <option value="desc">Newest</option>
-                        <option value="asc">Oldest</option>
-                    </select>
+                        <select value={sortDir} onChange={e => setSortDir(e.target.value as any)}>
+                            <option value="desc">{t('filters.newest')}</option>
+                            <option value="asc">{t('filters.oldest')}</option>
+                        </select>
 
-                    <select value={groupBy} onChange={e => setGroupBy(e.target.value as any)}>
-                        <option value="none">No grouping</option>
-                        <option value="category">Group by category</option>
-                        <option value="currency">Group by currency</option>
-                    </select>
+                        <h3>{t('filters.groupBy')}</h3>
+                        <select value={groupBy} onChange={e => setGroupBy(e.target.value as any)}>
+                            <option value="none">{t('filters.noGrouping')}</option>
+                            <option value="category">{t('filters.groupByCategory')}</option>
+                            <option value="currency">{t('filters.groupByCurrency')}</option>
+                        </select>
 
-                    <select value={dateRange} onChange={e => setDateRange(e.target.value as any)}>
-                        <option value="">All time</option>
-                        <option value="week">Last week</option>
-                        <option value="month">Last month</option>
-                        <option value="year">Last year</option>
-                    </select>
-                </div>
+                        <select value={dateRange} onChange={e => setDateRange(e.target.value as any)}>
+                            <option value="">{t('filters.allTime')}</option>
+                            <option value="week">{t('filters.lastWeek')}</option>
+                            <option value="month">{t('filters.lastMonth')}</option>
+                            <option value="year">{t('filters.lastYear')}</option>
+                        </select>
+                    </div>
+                )}
 
                 {/* Not logged in - Welcome page */}
                 {!authService.getAccessToken() && (
                     <div className={styles.container}>
                         <main className={styles.main}>
-                            <h2>Welcome to Expense Management App!</h2>
-                            <p>Track your expenses easily and for free.</p>
+                            <h2>{t('dashboard.welcomeMessage')}</h2>
+                            <p>{t('dashboard.welcomeSubMessage')}</p>
 
                             <div className={styles.actions} style={{margin: '30px 0'}}>
                                 <button
                                     onClick={() => navigate('/login')}
                                     style={{marginRight: '10px'}}
                                 >
-                                    Log In
+                                    {t('dashboard.logInButton')}
                                 </button>
                                 <button onClick={() => navigate('/register')}>
-                                    Register
+                                    {t('dashboard.registerButton')}
                                 </button>
                             </div>
 
-                            <p>Or try it instantly without registration:</p>
+                            <p>{t('dashboard.welcomeOrMessage')}</p>
                             <Link to="/expenses/create">
                                 <button style={{fontSize: '1.2em', padding: '15px 30px'}}>
-                                    Start Free Trial (10 expenses, 3 days)
+                                    {t('dashboard.freeTrialButton')}
                                 </button>
                             </Link>
 
                             <p style={{marginTop: '20px', color: '#666', fontSize: '0.9em'}}>
-                                No sign-up needed. We'll create a temporary session when you add your first expense.
+                                {t('dashboard.noSignUpText')}
                             </p>
                         </main>
                     </div>
@@ -278,15 +282,19 @@ export function Dashboard() {
                         {/* Add Expense button & guest messages */}
                         {role === "Guest" && (
                             <>
-                                <h2>Hi Guest!</h2>
-                                <p>You're using a <strong>free trial</strong>:</p>
-                                <ul style={{textAlign: 'left', maxWidth: '400px', margin: '20px auto'}}>
-                                    <li>Add up to <strong>10 expenses</strong></li>
-                                    <li>Valid for <strong>3 days</strong></li>
+                                <h2>{t('dashboard.guestWelcome')}</h2>
+                                <p dangerouslySetInnerHTML={{__html: t('dashboard.guestTrialDescription')}}></p>
+                                <ul style={{textAlign: 'left', maxWidth: '400px'}}>
+                                    <li dangerouslySetInnerHTML={{__html: t('dashboard.guestTrialLimit1')}}></li>
+                                    <li dangerouslySetInnerHTML={{__html: t('dashboard.guestTrialLimit2')}}></li>
                                 </ul>
                                 <div className={styles.actions}>
-                                    <button onClick={() => navigate('/login')}>Log In</button>
-                                    <button onClick={() => navigate('/register')}>Register for Full Access</button>
+                                    <button onClick={() => navigate('/login')}>
+                                        {t('dashboard.guestLoginButton')}
+                                    </button>
+                                    <button onClick={() => navigate('/register')}>
+                                        {t('dashboard.guestRegisterButton')}
+                                    </button>
                                 </div>
                             </>
                         )}
@@ -294,22 +302,22 @@ export function Dashboard() {
                         <div style={{margin: '20px 0'}}>
                             <Link to="/expenses/create">
                                 <button disabled={role === "Guest" && isLimitReached}>
-                                    + Add Expense {role === "Guest" && `(${totalCount}/10)`}
+                                    {t('dashboard.addExpenseButton')} {role === "Guest" && `(${totalCount}/10)`}
                                 </button>
                             </Link>
                             {role === "Guest" && isLimitReached && (
                                 <p style={{color: 'red', marginTop: '10px'}}>
-                                    Limit reached! Register to add more.
+                                    {t('dashboard.limitReachedMessage')}
                                 </p>
                             )}
                         </div>
 
                         <h3>
-                            {role === "Guest" ? "Your Trial Expenses" : t("dashboard.title")}
+                            {role === "Guest" ? t('dashboard.trialExpensesTitle') : t("dashboard.title")}
                         </h3>
 
                         {expenses.length === 0 ? (
-                            <p>No expenses yet. Click above to add your first one!</p>
+                            <p>{t('dashboard.firstExpensePrompt')}</p>
                         ) : groupBy !== "none" ? (
                             // Grouped view
                             Object.entries(groupedExpenses).map(([group, items]) => (
@@ -348,14 +356,14 @@ export function Dashboard() {
                         {/* Loading indicator at bottom */}
                         {loadingMore && (
                             <div style={{textAlign: 'center', padding: '20px'}}>
-                                <p>Loading more expenses...</p>
+                                <p>{t('dashboard.loadingExpenses')}</p>
                             </div>
                         )}
 
                         {/* End of list message */}
                         {!hasMore && expenses.length > 0 && (
                             <div style={{textAlign: 'center', padding: '30px', color: '#666'}}>
-                                <p>— You've reached the end —</p>
+                                <p>{t('dashboard.endOfList')}</p>
                             </div>
                         )}
                     </>
@@ -365,10 +373,10 @@ export function Dashboard() {
                 {role === "Admin" && (
                     <div className={styles.container}>
                         <main className={styles.main}>
-                            <h3>All Users</h3>
+                            <h3>{t('admin.allUsers')}</h3>
 
                             {users.length === 0 ? (
-                                <p>No users found.</p>
+                                <p>{t('admin.noUsersFound')}</p>
                             ) : (
                                 <div className={styles.expensesGrid}>
                                     {users.map((user) => (

@@ -3,8 +3,12 @@ import {useEffect, useState} from "react";
 import {authService} from "../../../services/AuthService.tsx";
 import type {Profile} from "./Profile.tsx";
 import {useNavigate, useParams} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 export function UserProfile(){
+    //internationalization
+    const { t } = useTranslation();
+    
     const { email: paramEmail } = useParams<{ email?: string }>();
     const [error, setError] = useState('');
     const [token, setToken] = useState('');
@@ -146,10 +150,10 @@ export function UserProfile(){
         <div className={styles.container}>
             <main className={styles.main}>
                 <div className={styles.profileContainer}>
-                    <h2 className={styles.title}>{isOwnProfile ? "My Profile" : "User Profile"}</h2>
+                    <h2 className={styles.title}>{isOwnProfile ? t('profileButtons.myProfile') : t('me.userProfile')}</h2>
 
                     {loading && (
-                        <div className={styles.loading}>Loading profile...</div>
+                        <div className={styles.loading}>{t('me.loadingProfile')}</div>
                     )}
 
                     {error && (
@@ -162,32 +166,32 @@ export function UserProfile(){
                                 <div className={styles.avatar}>
                                     {profile.UserName?.charAt(0).toUpperCase() || 'U'}
                                 </div>
-                                <h3>{profile.UserName || 'No username'}</h3>
+                                <h3>{profile.UserName || t('me.noUsername')}</h3>
                             </div>
 
                             <div className={styles.profileDetails}>
                                 <div className={styles.detailRow}>
-                                    <span className={styles.label}>Username:</span>
-                                    <span className={styles.value}>{profile.UserName || 'No Username'}</span>
+                                    <span className={styles.label}>{t('me.username')}</span>
+                                    <span className={styles.value}>{profile.UserName || t('me.noUsername')}</span>
                                 </div>
 
                                 <div className={styles.detailRow}>
-                                    <span className={styles.label}>Email:</span>
-                                    <span className={styles.value}>{profile.Email || 'No email'}</span>
+                                    <span className={styles.label}>{t('me.email')}</span>
+                                    <span className={styles.value}>{profile.Email || t('me.noEmail')}</span>
                                 </div>
 
                                 <div className={styles.detailRow}>
-                                    <span className={styles.label}>Phone:</span>
-                                    <span className={styles.value}>{profile.PhoneNumber || 'No phone number'}</span>
+                                    <span className={styles.label}>{t('me.phoneNumber')}</span>
+                                    <span className={styles.value}>{profile.PhoneNumber || t('me.noPhoneNumber')}</span>
                                 </div>
 
                                 <div className={styles.detailRow}>
-                                    <span className={styles.label}>Member Since:</span>
+                                    <span className={styles.label}>{t('me.memberSince')}</span>
                                     <span className={styles.value}>
-                                        {profile.AccountCreationDate
-                                            ? formatDate(profile.AccountCreationDate)
-                                            : 'Unknown date'}
-                                    </span>
+                                    {profile.AccountCreationDate
+                                        ? formatDate(profile.AccountCreationDate)
+                                        : t('me.unknownDate')}
+                                </span>
                                 </div>
                             </div>
 
@@ -196,13 +200,13 @@ export function UserProfile(){
                                     className={styles.editButton}
                                     onClick={() => navigate(isOwnProfile ? '/me/edit' : `/users/${profile.Email}/edit`)}
                                 >
-                                    Edit Profile
+                                    {t('profileButtons.editProfile')}
                                 </button>
                                 <button
                                     className={styles.logoutButton}
                                     onClick={handleLogout}
                                 >
-                                    Logout
+                                    {t('profileButtons.logout')}
                                 </button>
                                 <button
                                     className={styles.logoutButton}
@@ -210,7 +214,7 @@ export function UserProfile(){
                                     disabled={deleting}
                                     style={{backgroundColor: deleting ? '#ccc' : '#dc3545'}}
                                 >
-                                    {deleting ? "Deleting..." : "Delete Account"}
+                                    {deleting ? t('profileButtons.deleting') : t('profileButtons.deleteProfile')}
                                 </button>
                             </div>
                         </div>
@@ -218,7 +222,7 @@ export function UserProfile(){
 
                     {!loading && !error && !profile && (
                         <div className={styles.empty}>
-                            No profile data found.
+                            {t('me.noProfileData')}
                         </div>
                     )}
                 </div>

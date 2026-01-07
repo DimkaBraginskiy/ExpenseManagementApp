@@ -1,12 +1,149 @@
 ﻿{
   "dashboard": {
+    "welcomeMessage": "Witamy w Expense Management App!",
+    "welcomeSubMessage": "Sledż swoje wydatki latwo i za darmo.",
+    "welcomeOrMessage": "Albo sprobuj odrazu bez rejestracji.:",
+    "noSignUpText": "Nie potrzebujesz się rejestrowac. Stworzymy chasową sesję dla ciebie kiedy stworzysz swój pierwszy Wydatek.",
+    "freeTrialButton": "Sprobuj za darmo (10 wydatków, 3 dni)",
+
+    "logInButton": "Zaloguj się",
+    "registerButton": "Zarejestruj się",
+
     "title": "Moje wydatki",
     "addExpense": "Dodaj wydatek",
-    "noExpenses": "Brak wydatków"
+    "noExpenses": "Brak wydatków",
+
+    "guestWelcome": "Cześć Gościu!",
+    "guestTrialDescription": "Korzystasz z <strong>darmowej wersji próbnej</strong>:",
+    "guestTrialLimit1": "Możesz dodać maksymalnie <strong>10 wydatków</strong>",
+    "guestTrialLimit2": "Ważne przez <strong>3 dni</strong>",
+    "guestLoginButton": "Zaloguj się",
+    "guestRegisterButton": "Zarejestruj się dla pełnego dostępu",
+    "addExpenseButton": "+ Dodaj wydatek",
+    "trialExpensesTitle": "Twoje wydatki z wersji próbnej",
+    "limitReachedMessage": "Limit osiągnięty! Zarejestruj się, aby dodać więcej.",
+    "firstExpensePrompt": "Brak wydatków. Kliknij powyżej, aby dodać pierwszy!",
+    "loadingExpenses": "Ładowanie kolejnych wydatków...",
+    "endOfList": "— To już koniec —"
   },
   "filters": {
     "sortBy": "Sortuj według",
+    "groupBy": "Grupuj według",
+
     "date": "Data",
-    "description": "Opis"
+    "description": "Opis",
+
+    "newest": "Najnowsze",
+    "oldest": "Najstarsze",
+
+    "noGrouping": "Bez grupowania",
+    "groupByCategory" : "Grupuj według Kategorji",
+    "groupByCurrency" : "Grupuj według Waluty",
+
+    "allTime" : "Cały czas",
+    "lastWeek" : "Ostatnia Niedziela",
+    "lastMonth" : "Ostatni Miesiąc",
+    "lastYear" : "Ostatni Rok"
+  },
+  "profileButtons": {
+    "myProfile" : "Moje Konto",
+    "editProfile": "Edytuj Konto",
+    "logout": "Wyloguj się",
+    "deleteProfile": "Usuń Konto",
+    "deleting": "Trwa usunienie..."
+  },
+  "me": {
+    "loadingProfile": "Ładuję Konto...",
+    "username": "Imię:",
+    "noUsername": "Imię nie istnieie",
+    "email": "Skrzynka",
+    "noEmail": "Niema skrzynki",
+    "phoneNumber": "Numer telefonu",
+    "noPhoneNumber": "Bez numera telefonu",
+    "memberSince": "Członek od:",
+    "userProfile": "Profil użytkownika",
+    "unknownDate": "Nieznana data",
+    "noProfileData": "Dane profilu nie znalezione."
+  },
+  "admin": {
+    "allUsers": "Wszyscy użytkownicy",
+    "noUsersFound": "Nie znaleziono użytkowników."
+  },
+  "expenseEdit": {
+    "goBack": "Wróć",
+    "editExpense": "Edytuj Wydatek",
+    "date": "Data",
+    "description": "Opis",
+    "descriptionPlaceholder": "Opis wydatku",
+    "category": "Kategoria",
+    "selectCategory": "Wybierz kategorię",
+    "loadingCategories": "Ładowanie...",
+    "issuer": "Wystawca (opcjonalnie)",
+    "none": "Brak",
+    "currency": "Waluta",
+    "selectCurrency": "Wybierz walutę",
+    "loadingCurrencies": "Ładowanie...",
+    "products": "Produkty",
+    "product": "Produkt",
+    "name": "Nazwa",
+    "price": "Cena",
+    "quantity": "Ilość",
+    "removeProduct": "Usuń produkt",
+    "addProduct": "+ Dodaj produkt",
+    "updateExpense": "Zaktualizuj wydatek",
+    "addExpense": "Dodaj wydatek",
+    "saveExpense": "Zapisz wydatek",
+    "loadingExpense": "Ładowanie wydatku do edycji...",
+    "invalidExpenseId": "Nieprawidłowy ID wydatku",
+    "authRequired": "Wymagane uwierzytelnienie",
+    "failedToLoad": "Nie udało się załadować wydatku",
+
+    "selectIssuer" : "Wybierz nadawcę"
+  },
+  "errors": {
+    "dateRequired": "Data jest wymagana",
+    "dateFuture": "Data nie może być w przyszłości",
+    "descriptionMin": "Wymagane minimum 5 znaków",
+    "descriptionMax": "Maksymalnie 100 znaków dozwolonych",
+    "categoryRequired": "Kategoria jest wymagana",
+    "issuerRequired": "Wystawca jest wymagany",
+    "currencyRequired": "Waluta jest wymagana",
+    "productNameRequired": "Nazwa produktu jest wymagana",
+    "productNameMin": "Wymagane minimum 2 znaki",
+    "priceGreaterThanZero": "Cena musi być większa niż 0",
+    "quantityAtLeastOne": "Ilość musi wynosić co najmniej 1",
+    "submit": "Nie udało się zaktualizować wydatku"
+  },
+  "details": {
+    "details": "Szszegóły Wydatku",
+    
+    "loading": "Ładuję szczegóły wydatek...",
+    "goBack" : "Wróc",
+    "delete" : "Usuń",
+    "edit": "Edytuj",
+
+    "description": "Opis:",
+    "date": "Data:",
+    "issuer": "Nadawca:",
+    "category": "Kategoria:",
+    "currency": "Waluta:",
+    "products": "Produkty:",
+    "totalAmount": "Podsumowanie:",
+    "productsTotal": "Podsumowanie produktów:",
+
+    "products": "Produkty:"
+  },
+  "profileEdit": {
+    "editMyProfile": "Edytowanie Konta",
+    "editUserProfile" : "Edytowanie Konta Klubowicza",
+    "backToProfile" : "Wróc",
+    "username": "Imię:",
+    "updateUsername": "Wznów imię",
+    "email": "Skrzynka:",
+    "updateEmail": "Wznów skrzynkę",
+    "phone": "Numer telefonu:",
+    "updatePhone": "Wznów numer telefonu",
+    "saving": "Trwa zapis...",
+    "saveChanges": "Zapisz"
   }
 }

@@ -4,8 +4,11 @@ import {useEffect, useState} from "react";
 import type {Expense} from "../Dashboard/Expense.tsx";
 import {authService} from "../../../services/AuthService.tsx";
 import {ProductCard} from "./ProductCard.tsx";
+import {useTranslation} from "react-i18next";
 
 export function DetailedExpense(){
+    const { t } = useTranslation();
+    
     const navigate = useNavigate();
     const { id } = useParams<{ id : string }>();
     const [expense, setExpense] = useState<Expense | null>();
@@ -118,7 +121,7 @@ export function DetailedExpense(){
             <div className={styles.container}>
                 <div className={styles.main}>
                     <div className={styles.loading}>
-                        Loading expense details...
+                        {t('details.loading')}
                     </div>
                 </div>
             </div>
@@ -164,63 +167,63 @@ export function DetailedExpense(){
             <div className={styles.main}>
                 <div className={styles.headerActions}>
                     <button onClick={() => navigate(-1)} className={styles.backButton}>
-                        Go Back
+                        {t('details.goBack')}
                     </button>
                     <button onClick={handleDelete} className={styles.deleteButton}>
-                        Delete Expense
+                        {t('details.delete')}
                     </button>
                     <button
                         onClick={() => navigate(`/expenses/${id}/edit`)}
                         className={styles.editButton}
                     >
-                        Edit Expense
+                        {t('details.edit')}
                     </button>
                 </div>
 
 
                 <div className={styles.expenseDetails}>
-                    <h2>Expense Details</h2>
+                    <h2>{t('details.details')}</h2>
 
                     <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Description:</span>
+                        <span className={styles.detailLabel}>{t('details.description')}</span>
                         <span className={styles.detailValue}>{expense.description}</span>
                     </div>
 
                     <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Date:</span>
+                        <span className={styles.detailLabel}>{t('details.date')}</span>
                         <span className={styles.detailValue}>{expense.date}</span>
                     </div>
 
                     <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Total Amount:</span>
+                        <span className={styles.detailLabel}>{t('details.totalAmount')}</span>
                         <span className={styles.detailValue}>
                             ${expense.totalAmount?.toFixed(2) || '0.00'}
                         </span>
                     </div>
 
                     <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Category:</span>
+                        <span className={styles.detailLabel}>{t('details.category')}</span>
                         <span className={styles.detailValue}>
                             {expense.category?.name || 'N/A'}
                         </span>
                     </div>
 
                     <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Issuer:</span>
+                        <span className={styles.detailLabel}>{t('details.issuer')}</span>
                         <span className={styles.detailValue}>
                             {expense.issuer?.name || 'N/A'}
                         </span>
                     </div>
 
                     <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Currency:</span>
+                        <span className={styles.detailLabel}>{t('details.currency')}</span>
                         <span className={styles.detailValue}>
                             {expense.currency?.name || 'N/A'}
                         </span>
                     </div>
 
                     <div className={styles.detailItem}>
-                        <span className={styles.detailLabel}>Products Total:</span>
+                        <span className={styles.detailLabel}>{t('details.productsTotal')}</span>
                         <span className={styles.detailValue}>
                             {productsTotal}
                         </span>
@@ -229,7 +232,7 @@ export function DetailedExpense(){
 
                 {expense.products && expense.products.length > 0 && (
                     <div className={styles.productsSection}>
-                        <h3>Products ({expense.products.length})</h3>
+                        <h3>{t('details.products')} ({expense.products.length})</h3>
                         {expense.products.map((product, index) => (
                             <ProductCard key={index} product={product}/>
                         ))}

@@ -1,12 +1,149 @@
 ﻿{
   "dashboard": {
+    "welcomeMessage": "Добро пожаловать в Expense Management App!",
+    "welcomeSubMessage": "Следи за своими наличными затратами с легкостью и бесплатно.",
+    "welcomeOrMessage": "Или попробуй сразу без регистрации.",
+    "noSignUpText": "Не нужно регистрироваться. Создадим для тебя временную сессию при первом создании твоей Затраты.",
+    "freeTrialButton": "Попробуй бесплатно (10 затрат, 3 дня)",
+
+    "logInButton": "Вход",
+    "registerButton": "Регистрация",
+
     "title": "Мои расходы",
     "addExpense": "Добавить расход",
-    "noExpenses": "Расходов нет"
+    "noExpenses": "Расходов нет",
+
+    "guestWelcome": "Привет, Гость!",
+    "guestTrialDescription": "Ты используешь <strong>бесплатную пробную версию</strong>:",
+    "guestTrialLimit1": "Можешь добавить до <strong>10 затрат</strong>",
+    "guestTrialLimit2": "Действует <strong>3 дня</strong>",
+    "guestLoginButton": "Войти",
+    "guestRegisterButton": "Зарегистрироваться для полного доступа",
+    "addExpenseButton": "+ Добавить затрату",
+    "trialExpensesTitle": "Твои пробные затраты",
+    "limitReachedMessage": "Лимит достигнут! Зарегистрируйтесь, чтобы добавить больше.",
+    "firstExpensePrompt": "Расходов пока нет. Нажмите выше, чтобы добавить первый!",
+    "loadingExpenses": "Загрузка следующих расходов...",
+    "endOfList": "— Это уже конец —"
   },
   "filters": {
     "sortBy": "Сортировать по",
+    "groupBy": "Группировать по",
+
     "date": "Дата",
-    "description": "Описание"
+    "description": "Описание",
+
+    "newest": "Самые новые",
+    "oldest": "Самые старые",
+
+    "noGrouping": "Без группировки",
+    "groupByCategory": "По категории",
+    "groupByCurrency": "По валюте",
+
+    "allTime": "Всё время",
+    "lastWeek": "Последняя неделя",
+    "lastMonth": "Последний месяц",
+    "lastYear": "Последний год"
+  },
+  "profileButtons": {
+    "myProfile": "Мой профиль",
+    "editProfile": "Изменить профиль",
+    "logout": "Выход",
+    "deleteProfile": "Удалить профиль",
+    "deleting": "Удаление..."
+  },
+  "me": {
+    "loadingProfile": "Загрузка профиля...",
+    "username": "Имя пользователя:",
+    "noUsername": "Нет имени пользователя",
+    "email": "Почта",
+    "noEmail": "Нет почты",
+    "phoneNumber": "Телефонный номер",
+    "noPhoneNumber": "Без телефонного номера",
+    "memberSince": "Член от:",
+    "userProfile": "Профиль пользователя",
+    "unknownDate": "Неизвестная дата",
+    "noProfileData": "Данные профиля не найдены."
+  },
+  "admin": {
+    "allUsers": "Все пользователи",
+    "noUsersFound": "Пользователи не найдены."
+  },
+  "expenseEdit": {
+    "goBack": "Назад",
+    "editExpense": "Изменить затрату",
+    "date": "Дата",
+    "description": "Описание",
+    "descriptionPlaceholder": "Описание затраты",
+    "category": "Категория",
+    "selectCategory": "Выбрать категорию",
+    "loadingCategories": "Загрузка...",
+    "issuer": "Выставитель счета (опционально)",
+    "none": "Нет",
+    "currency": "Валюта",
+    "selectCurrency": "Выбрать валюту",
+    "loadingCurrencies": "Загрузка...",
+    "products": "Продукты",
+    "product": "Продукт",
+    "name": "Имя",
+    "price": "Цена",
+    "quantity": "Количество",
+    "removeProduct": "Удалить продукт",
+    "addProduct": "+ Добавить продукт",
+    "updateExpense": "Обновить затрату",
+    "addExpense": "Добавить затрату",
+    "saveExpense": "Сохранить затрату",
+    "loadingExpense": "Загрузка затраты для редактирования...",
+    "invalidExpenseId": "Неверный ID затраты",
+    "authRequired": "Требуется аутентификация",
+    "failedToLoad": "Не удалось загрузить затрату",
+
+    "selectIssuer" : "Выбрать выставителя счета"
+  },
+  "errors": {
+    "dateRequired": "Дата обязательна",
+    "dateFuture": "Дата не может быть в будущем",
+    "descriptionMin": "Минимум 5 символов требуется",
+    "descriptionMax": "Максимум 100 символов разрешено",
+    "categoryRequired": "Категория обязательна",
+    "issuerRequired": "Выставитель счета обязателен",
+    "currencyRequired": "Валюта обязательна",
+    "productNameRequired": "Название продукта обязательно",
+    "productNameMin": "Минимум 2 символа требуется",
+    "priceGreaterThanZero": "Цена должна быть больше 0",
+    "quantityAtLeastOne": "Количество должно быть не менее 1",
+    "submit": "Не удалось обновить затрату"
+  },
+  "details": {
+    "details": "Детали затраты",
+
+    "loading": "Загрузка деатей затраты...",
+    "goBack" : "Назад",
+    "delete" : "Удалить",
+    "edit": "Изменить",
+
+    "description": "Описание:",
+    "date": "Дата:",
+    "issuer": "Выставитель счета:",
+    "category": "Категория:",
+    "currency": "Валюта:",
+    "products": "Продукты:",
+    "totalAmount": "Сумма:",
+    "productsTotal": "Сумма продуктов:",
+
+    "products": "Продуты:"
+  },
+  "profileEdit": {
+    "editMyProfile": "Изменение профиля",
+    "editUserProfile" : "Изменение профиля пользователя",
+    "backToProfile" : "Назад",
+    "username": "Имя:",
+    "updateUsername": "Обновление имени",
+    "email": "Почта:",
+    "updateEmail": "Обновление почты",
+    "phone": "Номер телефона:",
+    "updatePhone": "Обновление номера телефона",
+    "saving": "Обновление...",
+    "saveChanges": "Обновить"
   }
-}
+} 

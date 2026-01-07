@@ -1,12 +1,149 @@
 ﻿{
   "dashboard": {
+    "welcomeMessage": "Welcome to Expense Management App!",
+    "welcomeSubMessage": "Track your expenses easily and for free.",
+    "welcomeOrMessage": "Or try it instantly without registration:",
+    "noSignUpText": "No sign-up needed. We'll create a temporary session when you add your first expense.",
+    "freeTrialButton": "Start Free Trial (10 expenses, 3 days)",
+
+    "logInButton": "Log In",
+    "registerButton": "Register",
+
     "title": "My Expenses",
     "addExpense": "Add Expense",
-    "noExpenses": "No expenses yet"
+    "noExpenses": "No expenses yet",
+
+    "guestWelcome": "Hi Guest!",
+    "guestTrialDescription": "You're using a <strong>free trial</strong>:",
+    "guestTrialLimit1": "Add up to <strong>10 expenses</strong>",
+    "guestTrialLimit2": "Valid for <strong>3 days</strong>",
+    "guestLoginButton": "Log In",
+    "guestRegisterButton": "Register for Full Access",
+    "addExpenseButton": "+ Add Expense",
+    "trialExpensesTitle": "Your Trial Expenses",
+    "limitReachedMessage": "Limit reached! Register to add more.",
+    "firstExpensePrompt": "No expenses yet. Click above to add your first one!",
+    "loadingExpenses": "Loading more expenses...",
+    "endOfList": "— You've reached the end —"
+  },
+  "admin": {
+    "allUsers": "All Users",
+    "noUsersFound": "No users found."
   },
   "filters": {
     "sortBy": "Sort by",
+    "groupBy": "Group by",
+
     "date": "Date",
-    "description": "Description"
+    "description": "Description",
+
+    "newest": "Newest",
+    "oldest": "Oldest",
+
+    "noGrouping": "No Grouping",
+    "groupByCategory" : "Group by Category",
+    "groupByCurrency" : "Group by Currency",
+
+    "allTime" : "All Time",
+    "lastWeek" : "Last Week",
+    "lastMonth" : "Last Month",
+    "lastYear" : "Last Year"
+  },
+  "profileButtons": {
+    "myProfile" : "My Profile",
+    "editProfile": "Edit Profile",
+    "logout": "Logout",
+    "deleteProfile": "Delete Profile",
+    "deleting": "Deleting..."
+  },
+  "me": {
+    "loadingProfile": "Loading Profile...",
+    "username": "Username:",
+    "noUsername": "No Username",
+    "email": "Email:",
+    "noEmail": "No email",
+    "phoneNumber": "Phone Number:",
+    "noPhoneNumber": "No phone number",
+    "memberSince": "Member since:",
+    "userProfile": "User Profile",
+    "unknownDate": "Unknown date",
+    "noProfileData": "No profile data found."
+  },
+  "expenseEdit": {
+    "goBack": "Go Back",
+    "editExpense": "Edit Expense",
+    "date": "Date",
+    "description": "Description",
+    "descriptionPlaceholder": "Expense description",
+    "category": "Category",
+    "selectCategory": "Select category",
+    "loadingCategories": "Loading...",
+    "issuer": "Issuer (optional)",
+    "none": "None",
+    "currency": "Currency",
+    "selectCurrency": "Select currency",
+    "loadingCurrencies": "Loading...",
+    "products": "Products",
+    "product": "Product",
+    "name": "Name",
+    "price": "Price",
+    "quantity": "Quantity",
+    "removeProduct": "Remove Product",
+    "addProduct": "+ Add product",
+    "updateExpense": "Update Expense",
+    "addExpense": "Add Expense",
+    "saveExpense": "Save Expense",
+    "loadingExpense": "Loading expense for editing...",
+    "invalidExpenseId": "Invalid expense ID",
+    "authRequired": "Authentication required",
+    "failedToLoad": "Failed to load expense",
+    
+    "selectIssuer" : "Select Issuer"
+  },
+  "errors": {
+    "dateRequired": "Date is required",
+    "dateFuture": "Date cannot be in the future",
+    "descriptionMin": "Minimum 5 characters required",
+    "descriptionMax": "Maximum 100 characters allowed",
+    "categoryRequired": "Category is required",
+    "issuerRequired": "Issuer is required",
+    "currencyRequired": "Currency is required",
+    "productNameRequired": "Product name is required",
+    "productNameMin": "Minimum 2 characters required",
+    "priceGreaterThanZero": "Price must be greater than 0",
+    "quantityAtLeastOne": "Quantity must be at least 1",
+    "submit": "Failed to update expense"
+  },
+  "details": {
+    "details": "Expense Details",
+    
+    "loading": "Loading Expense details...",
+    "goBack" : "Go Back",
+    "delete" : "Delete",
+    "edit": "Edit",
+    
+    "description": "Description:",
+    "date": "Date:",
+    "issuer": "Issuer:",
+    "category": "Category:",
+    "currency": "Currency:",
+    "products": "Products:",
+    "totalAmount": "Total amount:",
+    "productsTotal": "Products total:",
+    
+    "products": "Products:"
+  },
+  "profileEdit": {
+    "editMyProfile": "Edit My Profile",
+    "editUserProfile" : "Edit User Profile",
+    "backToProfile" : "Back to Profile",
+    "username": "Username:",
+    "updateUsername": "Update Username",
+    "email": "Email:",
+    "updateEmail": "Update Email",
+    "phone": "Phone Number:",
+    "updatePhone": "Update phone number",
+    "saving": "Saving changes...",
+    "saveChanges": "Save changes"
   }
 }

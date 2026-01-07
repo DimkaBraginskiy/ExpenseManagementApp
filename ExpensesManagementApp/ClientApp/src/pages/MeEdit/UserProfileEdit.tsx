@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { authService } from "../../../services/AuthService.tsx";
 import type { Profile } from "../Me/Profile.tsx";
 import {getUserRole} from "../../utils/jwt/jwtUtils.tsx";
+import {useTranslation} from "react-i18next";
 
 interface ProfileForm {
     userName: string;
@@ -12,6 +13,8 @@ interface ProfileForm {
 }
 
 export function UserProfileEdit() {
+    const { t } = useTranslation();
+    
     const { email: paramEmail } = useParams<{ email?: string }>();
     const navigate = useNavigate();
     const [form, setForm] = useState<ProfileForm>({
@@ -212,47 +215,47 @@ export function UserProfileEdit() {
         <div className={styles.container}>
             <main className={styles.main}>
                 <div className={styles.profileContainer}>
-                    <h2 className={styles.title}>{isOwnProfile ? "Edit My Profile" : "Edit User Profile"}</h2>
+                    <h2 className={styles.title}>{isOwnProfile ? t('profileEdit.editMyProfile') : t('profileEdit.editUserProfile')}</h2>
 
                     <button onClick={() => navigate(-1)} className={styles.backButton}>
-                    Back to profile
+                        {t('profileEdit.backToProfile')}
                     </button>
 
                     <div className={styles.profileCard}>
                         <div className={styles.detailRow}>
-                            <span className={styles.label}>Username:</span>
+                            <span className={styles.label}>{t('profileEdit.username')}</span>
                             <input
                                 type="text"
                                 className={styles.detailValue || styles.input} // fallback if detailValue not styled as input
                                 value={form.userName}
                                 onChange={(e) => setForm({ ...form, userName: e.target.value })}
-                                placeholder="Enter username"
+                                placeholder={t('profileEdit.updateUsername')}
                                 disabled={submitting}
                             />
                             {errors.userName && <div className={styles.error}>{errors.userName}</div>}
                         </div>
 
                         <div className={styles.detailRow}>
-                            <span className={styles.label}>Email:</span>
+                            <span className={styles.label}>{t('profileEdit.email')}</span>
                             <input
                                 type="email"
                                 className={styles.detailValue || styles.input}
                                 value={form.email}
                                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                                placeholder="Enter email"
+                                placeholder={t('profileEdit.updateEmail')}
                                 disabled={submitting}
                             />
                             {errors.email && <div className={styles.error}>{errors.email}</div>}
                         </div>
 
                         <div className={styles.detailRow}>
-                            <span className={styles.label}>Phone:</span>
+                            <span className={styles.label}>{t('profileEdit.phone')}</span>
                             <input
                                 type="tel"
                                 className={styles.detailValue || styles.input}
                                 value={form.phoneNumber || ""}
                                 onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
-                                placeholder="Enter phone number (optional)"
+                                placeholder={t('profileEdit.updatePhone')}
                                 disabled={submitting}
                             />
                             {errors.phoneNumber && <div className={styles.error}>{errors.phoneNumber}</div>}
@@ -266,7 +269,7 @@ export function UserProfileEdit() {
                                 onClick={handleSubmit}
                                 disabled={submitting}
                             >
-                                {submitting ? "Saving..." : "Save Changes"}
+                                {submitting ? t('profileEdit.saving') : t('profileEdit.saveChanges')}
                             </button>
                         </div>
                     </div>
