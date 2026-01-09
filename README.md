@@ -4,6 +4,13 @@ A full stack Web Application (currently under development) to enable Expenses Ma
 
 The application involves management of cash-based payments which can be added to the system by supporting detailed info storage.
 
+<img width="1023" height="751" alt="image" src="https://github.com/user-attachments/assets/20bfa9ff-0699-4978-be76-247daa4b51d7" />
+
+<img width="1093" height="862" alt="Снимок экрана 2026-01-09 211201" src="https://github.com/user-attachments/assets/c9520213-2f05-41cf-ba1a-fb7c6d425bc5" />
+
+
+
+
 ## Table of Contents
 - [Tech Stack](#tech-stack)
 - [API Endpoints](#api-endpoints)
