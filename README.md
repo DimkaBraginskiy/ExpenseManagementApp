@@ -33,6 +33,43 @@ The application involves management of cash-based payments which can be added to
 - **Authentication & Authorization:** .NET Core Identity, Json Web Token Authorization (JWT)
 - **Frontend Framework:** React.Ts
 
+## Setup
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+---
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+`env
+DB_PASSWORD=your_db_password`
+
+`JWT_KEY=your_super_secret_jwt_key`
+
+`ADMIN_PASSWORD=Admin123!`
+
+### Build and run docker
+`docker compose build`
+`docker compose up -d`
+
+### Stop the application
+`docker compose down`
+
+### Rebuild from scratch
+`docker compose down -v`
+
+`docker compose build --no-cache`
+
+`docker compose up -d`
+
+
+
+
+
 ##  API Endpoints
 <img width="599" height="419" alt="image" src="https://github.com/user-attachments/assets/d5c55266-42c3-4dc6-8381-b60d91928df7" />
 <img width="596" height="257" alt="image" src="https://github.com/user-attachments/assets/ca57a47d-6df4-461f-911b-6f3214b338d4" />
