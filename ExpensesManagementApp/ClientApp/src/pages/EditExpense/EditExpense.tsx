@@ -186,7 +186,7 @@ export function EditExpense(){
         if (!token || !id) return;
 
         try {
-            const response = await fetch(`/api/expenses/id/${id}`, {
+            const response = await fetch(`/api/Expenses/id/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

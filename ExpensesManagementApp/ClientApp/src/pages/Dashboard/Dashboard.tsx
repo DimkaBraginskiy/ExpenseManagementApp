@@ -283,9 +283,7 @@ export function Dashboard() {
                 {(role === "User" || role === "Guest") && (
                     <>
                         
-                        
                         <PieChartTest/>
-                        
                         
                         {/* Add Expense button & guest messages */}
                         {role === "Guest" && (
@@ -338,7 +336,7 @@ export function Dashboard() {
                                                 ref={index === items.length - 1 ? lastExpenseRef : null}
                                             >
                                                 <Link to={`/expenses/${expense.id}`} className={styles.expenseLink}>
-                                                    <ExpenseCard expense={expense} />
+                                                    <ExpenseCard expense={expense}/>
                                                 </Link>
                                             </div>
                                         ))}

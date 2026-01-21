@@ -72,7 +72,7 @@ export function CreateExpense() {
                         issuerRes.text()
                     ]);
                     console.error("Failed responses:", texts);
-                    throw new Error("Failed to load required data (401/403?)");
+                    throw new Error("Failed to load required data");
                 }
 
                 const cats = await categoryRes.json();
