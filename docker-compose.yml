@@ -1,0 +1,41 @@
+﻿services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__Default=Host=db;Database=expenses;Username=postgres;Password=${DB_PASSWORD}
+      - DbPassword=${DB_PASSWORD}
+      - Jwt__Key=${JWT_KEY}
+      - Jwt__Issuer=ExpenseManagementApp
+      - Jwt__Audience=ExpenseManagementAppUsers
+      - AdminUser__Email=admin@gmail.com
+      - AdminUser__Password=Admin123!
+      - AdminUser__Role=${ADMIN_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: expenses
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

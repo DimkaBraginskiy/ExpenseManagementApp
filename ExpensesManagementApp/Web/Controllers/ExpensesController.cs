@@ -285,13 +285,22 @@ public class ExpensesController : ControllerBase
 
     [HttpPut("id/{id}")]
     [Authorize]
-    public async Task<ActionResult<ExpenseResponseDto>> UpdateExpenseAsync(CancellationToken token, int id, ExpenseRequestDto dto)
+    public async Task<ActionResult<ExpenseResponseDto>> UpdateExpenseAsync(int id, ExpenseRequestDto dto)
     {
+        Console.WriteLine("hiii");
+        
+        var token = HttpContext.RequestAborted;
+        
         var (userId, guestSessionId, _) = GetOwnerInfo();
         
         try
         {
-            var res = await _expensesService.UpdateExpenseAsync(token, id, dto, userId, guestSessionId);
+            var res = await _expensesService.UpdateExpenseAsync(
+                token, 
+                id, 
+                dto, 
+                userId, 
+                guestSessionId);
             
             return Ok(res);
         }

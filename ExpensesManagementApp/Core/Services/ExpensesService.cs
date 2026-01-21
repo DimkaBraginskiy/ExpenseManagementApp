@@ -371,17 +371,15 @@ public class ExpensesService : IExpensesService
             query = query.Where(e => e.Id == id && e.GuestSessionId == guestSessionId.Value);
         else
             throw new ArgumentException("Invalid owner");
-
+        
         var expense = await query.FirstOrDefaultAsync(token);
 
         if (expense == null)
             throw new ArgumentException("Expense not found or access denied");
-
-        // Update simple fields
+        
         expense.Date = dto.Date.ToUniversalTime();
         expense.Description = dto.Description.Trim();
-
-        // Update Category
+        
         if (dto.Category?.Name != null)
         {
             var category = await _context.Categories
@@ -392,8 +390,7 @@ public class ExpensesService : IExpensesService
 
             expense.CategoryId = category.Id;
         }
-
-        // Update Issuer (optional)
+        
         if (dto.Issuer?.Name != null)
         {
             var issuer = await _context.Issuers

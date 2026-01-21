@@ -68,7 +68,12 @@ public class AuthService : IAuthService
         {
             throw new UnauthorizedAccessException("Invalid email.");
         }
-        
+
+        if (user.IsDeleted)
+        {
+            throw new UnauthorizedAccessException("User has been deleted. Could not login.");
+        }
+
         var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, lockoutOnFailure: false);
         if (!result.Succeeded)
         {

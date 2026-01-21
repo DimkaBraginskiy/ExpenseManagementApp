@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
       <UserSecretsId>4df668b3-adaa-4dba-86d9-3979b92bfcb9</UserSecretsId>
+      <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
     <ItemGroup>
@@ -30,6 +31,13 @@
       <Folder Include="ClientApp\public\" />
       <Folder Include="ClientApp\src\assets\" />
       <Folder Include="Core\Exceptions\" />
+      <Folder Include="db-init\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
     </ItemGroup>
 
 </Project>
