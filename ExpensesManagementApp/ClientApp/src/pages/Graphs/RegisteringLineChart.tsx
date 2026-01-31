@@ -1,6 +1,6 @@
-﻿import React, {useEffect, useState} from "react";
+﻿import {useEffect, useState} from "react";
 import {authService} from "../../../services/AuthService.tsx";
-import {ChartsAxis, ChartsXAxis, ChartsYAxis, LineChart} from "@mui/x-charts";
+import {ChartsXAxis, ChartsYAxis, LineChart} from "@mui/x-charts";
 import {Box, Typography} from "@mui/material";
 
 interface RegisteringStat{

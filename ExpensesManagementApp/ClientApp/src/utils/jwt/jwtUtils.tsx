@@ -27,10 +27,12 @@ export function getUserRole(): string | null{
     
     if(!decoded) return null;
 
-    const roleClaim = decoded.role ||
-        decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
-        decoded['role'];
-    
+    const roleClaim = (
+        (decoded as any).role ||
+        (decoded as any)['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
+        (decoded as any)['role']
+    ) as string | undefined; 
+   
     if(Array.isArray(roleClaim)){
         return roleClaim[0];
     }

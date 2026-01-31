@@ -2,8 +2,6 @@
 import {useNavigate, useParams} from "react-router-dom";
 import { useEffect, useState } from "react";
 import { authService } from "../../../services/AuthService.tsx";
-import type { Profile } from "../Me/Profile.tsx";
-import {getUserRole} from "../../utils/jwt/jwtUtils.tsx";
 import {useTranslation} from "react-i18next";
 
 interface ProfileForm {
@@ -26,8 +24,6 @@ export function UserProfileEdit() {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [originalEmail, setOriginalEmail] = useState('');
-    const role = getUserRole();
-    const isAdmin = role === "Admin";
     const isOwnProfile = !paramEmail;
 
     useEffect(() => {

@@ -4,22 +4,6 @@ import {useEffect, useState} from "react";
 import {authService} from "../../../services/AuthService.tsx";
 import {useTranslation} from "react-i18next";
 
-
-interface Product{
-    name: string;
-    price: number;
-    quantity: number;
-}
-
-interface ExpenseForm{
-    date: string;
-    description: string;
-    categoryId: number;
-    currencyId: number;
-    issuerId: number;
-    products: Product[];
-}
-
 export function EditExpense(){
     const { t } = useTranslation(); 
     
@@ -102,7 +86,7 @@ export function EditExpense(){
                         : [{ name: "", price: 0, quantity: 1 }]
                 });
                 
-            }catch(error : any){
+            }catch(err : any){
                 setErrors({ load: err.message || "Failed to load expense" });
             }finally {
                 setLoading(false);
@@ -112,17 +96,17 @@ export function EditExpense(){
         loadData();
     }, [id]);
 
-    const getCategoryName = (id) => {
+    const getCategoryName = (id : string | number) => {
         const cat = categories.find(c => c.id === Number(id) || c.id === id);
         return cat ? cat.name : "";
     };
 
-    const getIssuerName = (id) => {
+    const getIssuerName = (id : string | number) => {
         const iss = issuers.find(i => i.id === Number(id) || i.id === id);
         return iss ? iss.name : "";
     };
 
-    const getCurrencyName = (id) => {
+    const getCurrencyName = (id : string | number) => {
         const cur = currencies.find(c => c.id === Number(id) || c.id === id);
         return cur ? cur.name : "";
     };

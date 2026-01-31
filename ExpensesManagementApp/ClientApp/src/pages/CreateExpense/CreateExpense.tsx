@@ -44,7 +44,7 @@ export function CreateExpense() {
             await fetchOptions(token);
         };
 
-        const fetchOptions = async (token: string) => {
+        const fetchOptions = async (token: string | null) => {
             try {
                 setLoadingOptions(true);
                 console.log("[CreateExpense] Fetching categories/currencies/issuers with token...");
@@ -145,17 +145,17 @@ export function CreateExpense() {
         return newErrors;
     };
 
-    const getCategoryName = (id) => {
+    const getCategoryName = (id : string | number) => {
         const cat = categories.find(c => c.id === Number(id) || c.id === id);
         return cat ? cat.name : "";
     };
 
-    const getIssuerName = (id) => {
+    const getIssuerName = (id : string | number) => {
         const iss = issuers.find(i => i.id === Number(id) || i.id === id);
         return iss ? iss.name : "";
     };
 
-    const getCurrencyName = (id) => {
+    const getCurrencyName = (id : string | number) => {
         const cur = currencies.find(c => c.id === Number(id) || c.id === id);
         return cur ? cur.name : "";
     };

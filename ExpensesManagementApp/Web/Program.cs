@@ -82,19 +82,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors("AllowReact");
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.MapIdentityApi<User>();
 
@@ -103,5 +96,14 @@ using (var scope = app.Services.CreateScope())
     await RoleSeeder.SeedAsync(scope.ServiceProvider);
     await AdminSeeder.SeedAsync(scope.ServiceProvider);
 }
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("AllowReact");
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.MapFallbackToFile("index.html");
 
 app.Run();

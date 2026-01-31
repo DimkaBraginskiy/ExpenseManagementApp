@@ -1,6 +1,5 @@
 ﻿import type {User} from "./User";
 import styles from "./Dashboard.module.css"
-import React from "react";
 import {Link} from "react-router-dom";
 
 interface UserCardProps{

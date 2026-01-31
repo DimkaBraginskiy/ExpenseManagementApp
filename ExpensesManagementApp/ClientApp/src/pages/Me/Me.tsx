@@ -10,12 +10,12 @@ export function Me(){
     const { t } = useTranslation();
     
     const [error, setError] = useState('');
-    const [token, setToken] = useState('');
+    const [_token, setToken] = useState('');
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<Profile | null>(null);
     const navigate = useNavigate();
     const [deleting, setDeleting] = useState(false);
-    const [deleteError, setDeleteError] = useState('');
+    const [_deleteError, setDeleteError] = useState('');
 
     useEffect(() => {
         const loadProfile = async () => {

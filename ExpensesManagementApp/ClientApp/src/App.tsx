@@ -1,15 +1,11 @@
-import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import {Register} from "../src/pages/Register/Register.tsx";
 import {Login} from "../src/pages/Login/Login.tsx";
 import {Dashboard} from "../src/pages/Dashboard/Dashboard.tsx";
-import {ProtectedRoute} from "../auth/ProtectedRoute.tsx";
 import {Layout} from "./components/layout/Layout.tsx";
-import {Me} from "./pages/Me/Me.tsx";
 import {DetailedExpense} from "./pages/DetailedExpense/DetailedExpense.tsx";
 import {CreateExpense} from "./pages/CreateExpense/CreateExpense.tsx";
 import {EditExpense} from "./pages/EditExpense/EditExpense.tsx";
-import {MeEdit} from "./pages/MeEdit/MeEdit.tsx";
-import React from "react";
 import {UserProfile} from "./pages/Me/UserProfile.tsx";
 import {UserProfileEdit} from "./pages/MeEdit/UserProfileEdit.tsx";
 

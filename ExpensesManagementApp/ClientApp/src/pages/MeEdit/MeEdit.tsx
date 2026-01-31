@@ -2,6 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {  } from "../../../services/AuthService.tsx";
+import {authService} from "../../../services/AuthService.tsx";
 
 interface ProfileForm {
     userName: string;

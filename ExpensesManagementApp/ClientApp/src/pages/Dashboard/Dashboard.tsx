@@ -1,4 +1,4 @@
-import {use, useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {authService} from "../../../services/AuthService.tsx";
 
 import styles from "./Dashboard.module.css";
@@ -17,7 +17,6 @@ export function Dashboard() {
     const { t } = useTranslation();
     
     const [error, setError] = useState('');
-    const [token, setToken] = useState('');
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
     
@@ -126,8 +125,8 @@ export function Dashboard() {
             //grouping either by category or currency:
             const key =
                 groupBy === "category"
-                    ? expense.category.name
-                    : expense.currency.code;
+                    ? expense.category?.name || "No category"
+                    : expense.currency?.code || "No currency";
 
             acc[key] = acc[key] || [];
             acc[key].push(expense);

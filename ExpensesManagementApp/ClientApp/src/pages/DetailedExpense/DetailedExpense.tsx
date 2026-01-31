@@ -99,16 +99,6 @@ export function DetailedExpense(){
         
     };
     
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        });
-    };
-    
-    
     const calculateProductsTotal = () => {
         if(!expense?.products) return 0;
         
